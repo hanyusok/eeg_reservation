@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  patient
+  parent
+  admin
+  doctor
+}
+
+enum AppointmentType {
+  initial_consultation
+  eeg_monitoring
+  follow_up
+}
+
+enum AppointmentStatus {
+  scheduled
+  completed
+  cancelled
+  rescheduled
+}
+
+enum ReminderType {
+  email
+  sms
+}
+
+enum ReminderStatus {
+  pending
+  sent
+  failed
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  role          UserRole
+  firstName     String    @map("first_name")
+  lastName      String    @map("last_name")
+  phone         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  patientProfile      Patient?              @relation("PatientUser")
+  parentOfPatients    Patient[]            @relation("ParentUser")
+  appointments        Appointment[]
+  uploadedDocuments   MedicalDocument[]
+  auditLogs           AuditLog[]
+
+  @@map("users")
+}
+
+model Patient {
+  id                      String    @id @default(uuid())
+  userId                  String    @unique @map("user_id")
+  parentId                String?   @map("parent_id")
+  dateOfBirth             DateTime  @map("date_of_birth")
+  medicalRecordNumber     String?   @unique @map("medical_record_number")
+  medicalHistory          String?   @map("medical_history") @db.Text
+  currentMedications      String?   @map("current_medications") @db.Text
+  emergencyContactName    String    @map("emergency_contact_name")
+  emergencyContactPhone   String    @map("emergency_contact_phone")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user            User                @relation("PatientUser", fields: [userId], references: [id], onDelete: Cascade)
+  parent          User?               @relation("ParentUser", fields: [parentId], references: [id], onDelete: SetNull)
+  appointments    Appointment[]
+  documents       MedicalDocument[]
+
+  @@map("patients")
+}
+
+model Appointment {
+  id                String            @id @default(uuid())
+  patientId         String            @map("patient_id")
+  parentId          String            @map("parent_id")
+  calendlyEventId   String?           @unique @map("calendly_event_id")
+  appointmentType   AppointmentType   @map("appointment_type")
+  scheduledAt       DateTime          @map("scheduled_at")
+  durationMinutes   Int               @default(60) @map("duration_minutes")
+  status            AppointmentStatus @default(scheduled)
+  notes             String?           @db.Text
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  patient           Patient               @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  parent            User                  @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  reminders         AppointmentReminder[]
+  documents         MedicalDocument[]
+
+  @@map("appointments")
+}
+
+model AppointmentReminder {
+  id            String          @id @default(uuid())
+  appointmentId String          @map("appointment_id")
+  reminderType  ReminderType    @map("reminder_type")
+  sentAt        DateTime?       @map("sent_at")
+  scheduledFor  DateTime        @map("scheduled_for")
+  status        ReminderStatus  @default(pending)
+
+  // Relations
+  appointment   Appointment     @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@map("appointment_reminders")
+}
+
+model MedicalDocument {
+  id            String    @id @default(uuid())
+  patientId     String    @map("patient_id")
+  appointmentId String?   @map("appointment_id")
+  fileName      String    @map("file_name")
+  filePath      String    @map("file_path")
+  fileType      String    @map("file_type")
+  uploadedBy    String    @map("uploaded_by")
+  uploadedAt    DateTime  @default(now()) @map("uploaded_at")
+
+  // Relations
+  patient       Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment   Appointment?  @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  uploader      User          @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+
+  @@map("medical_documents")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?  @map("user_id")
+  action      String
+  entityType  String   @map("entity_type")
+  entityId    String   @map("entity_id")
+  details     Json?
+  ipAddress   String?  @map("ip_address")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}
+

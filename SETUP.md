@@ -19,6 +19,16 @@ DATABASE_URL="postgresql://user:password@localhost:5432/eeg_reservation?schema=p
 # NextAuth
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="your-secret-key-here-generate-with-openssl-rand-base64-32"
+AUTH_SECRET="your-secret-key-here-generate-with-openssl-rand-base64-32"
+
+# OAuth Providers (Optional)
+# Google OAuth
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+
+# Kakao OAuth
+KAKAO_CLIENT_ID=""
+KAKAO_CLIENT_SECRET=""
 
 # Calendly (to be configured in Phase 2)
 CALENDLY_API_KEY=""
@@ -35,10 +45,64 @@ EMAIL_SERVER_PASSWORD=""
 ZAPIER_WEBHOOK_URL=""
 ```
 
-**Important**: Generate a secure `NEXTAUTH_SECRET`:
+**Important**: Generate a secure `NEXTAUTH_SECRET` and `AUTH_SECRET`:
 ```bash
 openssl rand -base64 32
 ```
+
+### OAuth Setup (Optional)
+
+#### Google OAuth Setup
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Google+ API
+4. Go to "Credentials" → "Create Credentials" → "OAuth client ID"
+5. Configure the OAuth consent screen:
+   - User Type: External (for testing) or Internal (for organization)
+   - Add your app name, support email, and developer contact
+6. Create OAuth client ID:
+   - Application type: Web application
+   - Authorized redirect URIs: `http://localhost:3000/api/auth/callback/google`
+7. Copy the Client ID and Client Secret to your `.env` file:
+   ```env
+   GOOGLE_CLIENT_ID="your-google-client-id"
+   GOOGLE_CLIENT_SECRET="your-google-client-secret"
+   ```
+
+#### Kakao OAuth Setup
+
+1. Go to [Kakao Developers](https://developers.kakao.com/)
+2. Create a new application or select an existing one
+3. Go to "앱 설정" → "앱 키" and copy your REST API key
+4. Go to "제품 설정" → "카카오 로그인" → "활성화 설정" → Enable "카카오 로그인"
+5. Go to "카카오 로그인" → "Redirect URI 등록":
+   - Add: `http://localhost:3000/api/auth/callback/kakao`
+6. **중요**: Go to "카카오 로그인" → "동의항목":
+   - **필수**: Enable "닉네임" (profile_nickname) - **반드시 활성화 필요**
+   - **선택**: Enable "카카오계정(이메일)" (account_email) - 이메일이 필요한 경우만 활성화
+   
+   **동의항목 설정 방법:**
+   - "동의항목" 메뉴에서 각 항목을 클릭
+   - "필수 동의" 또는 "선택 동의"로 설정
+   - "저장" 버튼 클릭
+   - **주의**: 동의항목을 활성화하지 않으면 KOE205 오류가 발생할 수 있습니다
+   
+7. Copy the REST API key to your `.env` file:
+   ```env
+   KAKAO_CLIENT_ID="your-kakao-rest-api-key"
+   KAKAO_CLIENT_SECRET=""  # Usually empty for Kakao, but check your app settings
+   ```
+
+**KOE205 오류 해결:**
+- 오류 메시지: "Authorization codes were requested with unset Kakao Login consent items"
+- 해결 방법:
+  1. Kakao Developer Console → "카카오 로그인" → "동의항목"으로 이동
+  2. 요청한 scope에 해당하는 동의항목이 모두 활성화되어 있는지 확인
+  3. 현재 코드는 `profile_nickname`만 요청하므로, 최소한 "닉네임" 동의항목은 활성화되어 있어야 합니다
+  4. 이메일이 필요한 경우 `account_email` scope를 추가하고 "카카오계정(이메일)" 동의항목도 활성화하세요
+
+**Note**: For production, update the redirect URIs to your production domain.
 
 ### 3. Database Setup
 

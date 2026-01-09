@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import { Chrome, MessageCircle } from "lucide-react"
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -55,6 +56,21 @@ export default function LoginPage() {
     }
   }
 
+  const handleOAuthSignIn = async (provider: "google" | "kakao") => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      await signIn(provider, {
+        callbackUrl: "/dashboard",
+        redirect: true,
+      })
+    } catch (err) {
+      setError(`Failed to sign in with ${provider}. Please try again.`)
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8 shadow-lg">
@@ -66,6 +82,40 @@ export default function LoginPage() {
               create a new account
             </Link>
           </p>
+        </div>
+
+        {/* OAuth Buttons */}
+        <div className="space-y-3">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => handleOAuthSignIn("google")}
+            disabled={isLoading}
+          >
+            <Chrome className="mr-2 h-4 w-4" />
+            Continue with Google
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => handleOAuthSignIn("kakao")}
+            disabled={isLoading}
+          >
+            <MessageCircle className="mr-2 h-4 w-4" />
+            Continue with Kakao
+          </Button>
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

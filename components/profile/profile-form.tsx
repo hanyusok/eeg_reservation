@@ -107,7 +107,15 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       }
 
       setSuccess("Profile updated successfully!")
+      
+      // Refresh the page to show updated data
+      // This will trigger a server-side re-render with fresh data from database
       router.refresh()
+      
+      // Optionally redirect to dashboard to see updated profile
+      setTimeout(() => {
+        router.push("/dashboard")
+      }, 1500)
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000)

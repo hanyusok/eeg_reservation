@@ -21,6 +21,16 @@ function Kakao(options: { clientId: string; clientSecret?: string }) {
     id: "kakao",
     name: "Kakao",
     type: "oauth" as const,
+    clientId: clientId, // This is used to create the client object: { client_id: provider.clientId, ...provider.client }
+    clientSecret: clientSecret || undefined,
+    // Configure client for oauth4webapi
+    // NextAuth v5 creates client object as: { client_id: provider.clientId, ...provider.client }
+    // Setting token_endpoint_auth_method to "client_secret_post" ensures client_id is sent in POST body (not Authorization header)
+    // Don't set client_id here - it's already set from provider.clientId above
+    client: {
+      ...(clientSecret ? { client_secret: clientSecret } : {}),
+      token_endpoint_auth_method: "client_secret_post" as const,
+    },
     authorization: {
       url: "https://kauth.kakao.com/oauth/authorize",
       params: {
@@ -31,10 +41,32 @@ function Kakao(options: { clientId: string; clientSecret?: string }) {
         response_type: "code",
       },
     },
-    token: "https://kauth.kakao.com/oauth/token",
-    userinfo: "https://kapi.kakao.com/v2/user/me",
-    clientId: clientId,
-    clientSecret: clientSecret,
+    token: {
+      url: "https://kauth.kakao.com/oauth/token",
+    },
+    userinfo: {
+      url: "https://kapi.kakao.com/v2/user/me",
+      async request(context: { tokens: { access_token: string } }) {
+        const { tokens } = context
+        const response = await fetch("https://kapi.kakao.com/v2/user/me", {
+          headers: {
+            Authorization: `Bearer ${tokens.access_token}`,
+          },
+        })
+        
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.error("[Kakao UserInfo Error]", {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          })
+          throw new Error(`Kakao userinfo request failed: ${response.statusText}`)
+        }
+        
+        return await response.json()
+      },
+    },
     profile(profile: any) {
       // Kakao API v2 response structure:
       // {
@@ -65,18 +97,6 @@ function Kakao(options: { clientId: string; clientSecret?: string }) {
       // Warn if email is not available (fallback email used)
       if (!kakaoAccount.email && process.env.NODE_ENV === "development") {
         console.warn("[Kakao] Email not available. Enable 'account_email' consent item in Kakao Developer Console.")
-      }
-      
-      // Debug logging (remove in production)
-      if (process.env.NODE_ENV === "development") {
-        console.log("[Kakao Profile Mapping]", {
-          original: {
-            id: profile.id,
-            email: kakaoAccount.email,
-            nickname: kakaoProfile.nickname,
-          },
-          mapped: mappedProfile,
-        })
       }
       
       return mappedProfile
@@ -150,18 +170,6 @@ export const authConfig = {
     async signIn({ user, account, profile }) {
       if (account?.provider === "google" || account?.provider === "kakao") {
         try {
-          // Debug logging
-          if (process.env.NODE_ENV === "development") {
-            console.log("[OAuth SignIn]", {
-              provider: account.provider,
-              user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-              },
-            })
-          }
-
           // Check if user exists
           let dbUser = await prisma.user.findUnique({
             where: { email: user.email! },
@@ -219,29 +227,12 @@ export const authConfig = {
                 },
               },
             })
-
-            if (process.env.NODE_ENV === "development") {
-              console.log("[OAuth User Created]", {
-                id: dbUser.id,
-                email: dbUser.email,
-                name: `${dbUser.firstName} ${dbUser.lastName}`,
-                role: dbUser.role,
-              })
-            }
           }
 
           // Update user object with database user info for JWT token
           // This ensures session has the correct user.id and role
           user.id = dbUser.id
           ;(user as any).role = dbUser.role
-          
-          if (process.env.NODE_ENV === "development") {
-            console.log("[OAuth SignIn Complete]", {
-              userId: user.id,
-              email: user.email,
-              role: (user as any).role,
-            })
-          }
 
           return true
         } catch (error) {
@@ -260,15 +251,6 @@ export const authConfig = {
         token.role = (user as any).role
         token.id = user.id
         ;(token as any).email = user.email
-        
-        if (process.env.NODE_ENV === "development") {
-          console.log("[JWT Token Created]", {
-            id: token.id,
-            email: (token as any).email,
-            role: token.role,
-            provider: account?.provider,
-          })
-        }
       }
       return token
     },
@@ -288,15 +270,6 @@ export const authConfig = {
         // }
         ;(session.user as any).id = token.id as string
         ;(session.user as any).role = token.role as string
-        
-        if (process.env.NODE_ENV === "development") {
-          console.log("[Session Mapped]", {
-            userId: session.user.id,
-            email: session.user.email,
-            role: (session.user as any).role,
-            name: session.user.name,
-          })
-        }
       }
       return session
     },

@@ -1,7 +1,9 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from "next/link"
+import { UserProfile } from "@/components/dashboard/user-profile"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -20,6 +22,11 @@ export default async function DashboardPage() {
         <p className="text-sm text-muted-foreground mt-1">
           Role: {session.user.role}
         </p>
+      </div>
+
+      {/* User Profile Section */}
+      <div className="mb-8">
+        <UserProfile session={session} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

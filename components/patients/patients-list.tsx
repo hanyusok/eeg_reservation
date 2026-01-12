@@ -120,6 +120,11 @@ export default function PatientsList() {
               </div>
             </div>
             <div className="flex gap-2">
+              <Button asChild size="sm">
+                <Link href={`/appointments/book?patientId=${patient.id}`}>
+                  Book Appointment
+                </Link>
+              </Button>
               <Button asChild variant="outline" size="sm">
                 <Link href={`/patients/${patient.id}`}>View Details</Link>
               </Button>

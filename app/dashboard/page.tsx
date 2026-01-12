@@ -35,10 +35,32 @@ export default async function DashboardPage() {
           <p className="text-muted-foreground mb-4">
             View and manage your appointments
           </p>
-          <Button asChild>
-            <Link href="/appointments">View Appointments</Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild>
+              <Link href="/appointments">View Appointments</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/appointments/book">Book New</Link>
+            </Button>
+          </div>
         </div>
+
+        {(session.user.role === "parent" || session.user.role === "admin" || session.user.role === "doctor") && (
+          <div className="rounded-lg border bg-card p-6">
+            <h2 className="text-xl font-semibold mb-2">Patients</h2>
+            <p className="text-muted-foreground mb-4">
+              Manage patient profiles
+            </p>
+            <div className="flex gap-2">
+              <Button asChild>
+                <Link href="/patients">View Patients</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/patients/new">Add Patient</Link>
+              </Button>
+            </div>
+          </div>
+        )}
 
         <div className="rounded-lg border bg-card p-6">
           <h2 className="text-xl font-semibold mb-2">Profile</h2>
@@ -49,18 +71,6 @@ export default async function DashboardPage() {
             <Link href="/profile">Edit Profile</Link>
           </Button>
         </div>
-
-        {session.user.role === "parent" && (
-          <div className="rounded-lg border bg-card p-6">
-            <h2 className="text-xl font-semibold mb-2">Patients</h2>
-            <p className="text-muted-foreground mb-4">
-              Manage patient profiles
-            </p>
-            <Button asChild variant="outline">
-              <Link href="/patients">View Patients</Link>
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   )

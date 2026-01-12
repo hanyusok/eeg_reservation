@@ -54,7 +54,14 @@ export default function BookingForm() {
 
   useEffect(() => {
     fetchPatients()
-  }, [])
+    
+    // Check if patientId is in URL params
+    const urlParams = new URLSearchParams(window.location.search)
+    const patientIdParam = urlParams.get("patientId")
+    if (patientIdParam) {
+      setValue("patientId", patientIdParam)
+    }
+  }, [setValue])
 
   const fetchPatients = async () => {
     try {

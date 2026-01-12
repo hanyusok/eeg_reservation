@@ -20,7 +20,10 @@ export default async function PatientsPage() {
             Manage patient profiles
           </p>
         </div>
-        {(session.user.role === "parent" || session.user.role === "admin" || session.user.role === "doctor") && (
+        {(session.user.role === "parent" ||
+          session.user.role === "admin" ||
+          session.user.role === "doctor" ||
+          session.user.role === "patient") && (
           <Button asChild>
             <Link href="/patients/new">Add New Patient</Link>
           </Button>

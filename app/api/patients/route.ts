@@ -104,6 +104,17 @@ export async function POST(request: NextRequest) {
       }
       // If no parentId specified, use current user as parent
       validatedData.parentId = session.user.id
+    } else if (session.user.role === "patient") {
+      // Patient can create their own patient profile
+      // The userId must be their own, and parentId should be null or their own userId
+      if (validatedData.userId !== session.user.id) {
+        return NextResponse.json(
+          { error: "Patients can only create profiles for themselves" },
+          { status: 403 }
+        )
+      }
+      // Patient creating their own profile - no parent
+      validatedData.parentId = undefined
     } else if (session.user.role !== "admin" && session.user.role !== "doctor") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }

@@ -45,7 +45,10 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {(session.user.role === "parent" || session.user.role === "admin" || session.user.role === "doctor") && (
+        {(session.user.role === "parent" ||
+          session.user.role === "admin" ||
+          session.user.role === "doctor" ||
+          session.user.role === "patient") && (
           <div className="rounded-lg border bg-card p-6">
             <h2 className="text-xl font-semibold mb-2">Patients</h2>
             <p className="text-muted-foreground mb-4">

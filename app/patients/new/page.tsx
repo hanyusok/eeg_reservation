@@ -10,7 +10,12 @@ export default async function NewPatientPage() {
     redirect("/auth/login")
   }
 
-  if (session.user.role !== "parent" && session.user.role !== "admin" && session.user.role !== "doctor") {
+  if (
+    session.user.role !== "parent" &&
+    session.user.role !== "admin" &&
+    session.user.role !== "doctor" &&
+    session.user.role !== "patient"
+  ) {
     redirect("/dashboard")
   }
 

@@ -3,6 +3,9 @@
  * Run with: npx tsx scripts/create-admin-user.ts
  */
 
+// Load environment variables from .env file
+import "dotenv/config"
+
 import { PrismaClient } from "@prisma/client"
 import bcrypt from "bcryptjs"
 

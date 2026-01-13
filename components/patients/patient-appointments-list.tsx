@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { User } from "lucide-react"
+import { Calendar, Clock, RefreshCw, AlertCircle } from "lucide-react"
 
 interface Appointment {
   id: string
@@ -12,28 +12,41 @@ interface Appointment {
   durationMinutes: number
   status: string
   notes: string | null
-  patient: {
-    user: {
-      firstName: string
-      lastName: string
-    }
+  parent: {
+    id: string
+    firstName: string
+    lastName: string
+    email: string
   }
 }
 
-export default function AppointmentsList() {
+interface PatientAppointmentsListProps {
+  patientId: string
+}
+
+export default function PatientAppointmentsList({
+  patientId,
+}: PatientAppointmentsListProps) {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchAppointments()
-  }, [])
+  }, [patientId])
 
   const fetchAppointments = async () => {
     try {
       setLoading(true)
-      const response = await fetch("/api/appointments")
+      setError(null)
+      const response = await fetch(`/api/patients/${patientId}/appointments`)
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error("Patient not found")
+        }
+        if (response.status === 403) {
+          throw new Error("You don't have permission to view these appointments")
+        }
         throw new Error("Failed to fetch appointments")
       }
       const data = await response.json()
@@ -57,7 +70,7 @@ export default function AppointmentsList() {
   }
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case "scheduled":
         return "bg-blue-100 text-blue-800"
       case "completed":
@@ -79,14 +92,24 @@ export default function AppointmentsList() {
   }
 
   if (loading) {
-    return <div className="text-center py-8">Loading appointments...</div>
+    return (
+      <div className="flex items-center justify-center py-12">
+        <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+        <span className="ml-2 text-muted-foreground">Loading appointments...</span>
+      </div>
+    )
   }
 
   if (error) {
     return (
-      <div className="text-center py-8 text-destructive">
-        Error: {error}
-        <Button onClick={fetchAppointments} className="ml-4" variant="outline">
+      <div className="rounded-lg border border-destructive bg-destructive/10 p-6">
+        <div className="flex items-center gap-2 text-destructive mb-4">
+          <AlertCircle className="h-5 w-5" />
+          <h3 className="font-semibold">Error</h3>
+        </div>
+        <p className="text-sm mb-4">{error}</p>
+        <Button onClick={fetchAppointments} variant="outline">
+          <RefreshCw className="h-4 w-4 mr-2" />
           Retry
         </Button>
       </div>
@@ -96,9 +119,11 @@ export default function AppointmentsList() {
   if (appointments.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">No appointments found.</p>
+        <p className="text-muted-foreground mb-4">No appointments found for this patient.</p>
         <Button asChild>
-          <Link href="/appointments/book">Book Your First Appointment</Link>
+          <Link href={`/appointments/book?patientId=${patientId}`}>
+            Book Appointment
+          </Link>
         </Button>
       </div>
     )
@@ -127,20 +152,24 @@ export default function AppointmentsList() {
                 </span>
               </div>
               <div className="flex items-center gap-2 mb-2 text-muted-foreground">
-                <User className="h-4 w-4" />
-                <p className="font-medium">
-                  {appointment.patient.user.firstName}{" "}
-                  {appointment.patient.user.lastName}
-                </p>
+                <Calendar className="h-4 w-4" />
+                <p className="font-medium">{formatDate(appointment.scheduledAt)}</p>
               </div>
-              <p className="text-muted-foreground mb-2">
-                {formatDate(appointment.scheduledAt)}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Duration: {appointment.durationMinutes} minutes
-              </p>
+              <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <p>Duration: {appointment.durationMinutes} minutes</p>
+              </div>
+              {appointment.parent && (
+                <div className="mt-2 text-sm text-muted-foreground">
+                  <p>
+                    Parent: {appointment.parent.firstName} {appointment.parent.lastName}
+                  </p>
+                </div>
+              )}
               {appointment.notes && (
-                <p className="mt-2 text-sm">{appointment.notes}</p>
+                <p className="mt-3 text-sm bg-muted/50 p-3 rounded-md">
+                  {appointment.notes}
+                </p>
               )}
             </div>
             <div className="flex gap-2">
@@ -154,4 +183,3 @@ export default function AppointmentsList() {
     </div>
   )
 }
-

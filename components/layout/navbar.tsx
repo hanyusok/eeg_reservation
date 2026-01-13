@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Home, Calendar, Users, User, LogOut, Settings } from "lucide-react"
+import { Home, Calendar, Users, User, LogOut, Settings, Info } from "lucide-react"
 import { signOut } from "next-auth/react"
 
 export function Navbar() {
@@ -81,6 +81,17 @@ export function Navbar() {
                 </Link>
               </Button>
             )}
+
+            <Button
+              asChild
+              variant={isActive("/information") ? "default" : "ghost"}
+              size="sm"
+            >
+              <Link href="/information">
+                <Info className="h-4 w-4 mr-2" />
+                Information
+              </Link>
+            </Button>
 
             {(userRole === "admin" || userRole === "doctor") && (
               <Button

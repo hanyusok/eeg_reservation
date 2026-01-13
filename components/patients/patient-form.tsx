@@ -15,6 +15,8 @@ const patientSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional(),
+  // Family relationship
+  parentEmail: z.string().email("Invalid email address").optional().or(z.literal("")),
   // Patient information
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   medicalRecordNumber: z.string().optional(),
@@ -32,6 +34,8 @@ export default function PatientForm({ patientId, initialData }: { patientId?: st
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isEditMode] = useState(!!patientId)
+  const [parentInfo, setParentInfo] = useState<{ id: string; name: string } | null>(null)
+  const [searchingParent, setSearchingParent] = useState(false)
 
   const {
     register,
@@ -47,6 +51,36 @@ export default function PatientForm({ patientId, initialData }: { patientId?: st
     // For new patients, we'll create a user account or link to existing
     // For now, we'll skip user selection for simplicity
   }, [])
+
+  const searchParent = async (email: string) => {
+    if (!email || email.trim() === "") {
+      setParentInfo(null)
+      return
+    }
+
+    try {
+      setSearchingParent(true)
+      const response = await fetch(`/api/users/by-email?email=${encodeURIComponent(email)}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.user && data.user.role === "parent") {
+          setParentInfo({
+            id: data.user.id,
+            name: `${data.user.firstName} ${data.user.lastName}`,
+          })
+        } else {
+          setParentInfo(null)
+          setError("User found but is not a parent account")
+        }
+      } else {
+        setParentInfo(null)
+      }
+    } catch (err) {
+      setParentInfo(null)
+    } finally {
+      setSearchingParent(false)
+    }
+  }
 
   const onSubmit = async (data: PatientForm) => {
     try {
@@ -132,6 +166,27 @@ export default function PatientForm({ patientId, initialData }: { patientId?: st
   }
 
   const createPatientProfile = async (userId: string, data: PatientForm) => {
+    // Get parentId if parent email was provided
+    let parentId: string | undefined = undefined
+    if (data.parentEmail && data.parentEmail.trim() !== "") {
+      if (parentInfo) {
+        parentId = parentInfo.id
+      } else {
+        // Try to find parent by email
+        try {
+          const parentResponse = await fetch(`/api/users/by-email?email=${encodeURIComponent(data.parentEmail)}`)
+          if (parentResponse.ok) {
+            const parentData = await parentResponse.json()
+            if (parentData.user && parentData.user.role === "parent") {
+              parentId = parentData.user.id
+            }
+          }
+        } catch (err) {
+          // If parent not found, continue without parent
+        }
+      }
+    }
+
     const response = await fetch("/api/patients", {
       method: "POST",
       headers: {
@@ -139,6 +194,7 @@ export default function PatientForm({ patientId, initialData }: { patientId?: st
       },
       body: JSON.stringify({
         userId,
+        parentId,
         dateOfBirth: data.dateOfBirth, // Send as YYYY-MM-DD string, not ISO
         medicalRecordNumber: data.medicalRecordNumber || undefined,
         medicalHistory: data.medicalHistory || undefined,
@@ -227,6 +283,31 @@ export default function PatientForm({ patientId, initialData }: { patientId?: st
               id="phone"
               placeholder="+1 (555) 123-4567"
             />
+          </div>
+          <div>
+            <Label htmlFor="parentEmail">Parent/Guardian Email (Optional)</Label>
+            <Input
+              {...register("parentEmail")}
+              type="email"
+              id="parentEmail"
+              placeholder="parent@example.com"
+              onBlur={(e) => {
+                if (e.target.value) {
+                  searchParent(e.target.value)
+                }
+              }}
+            />
+            {parentInfo && (
+              <p className="mt-1 text-sm text-green-600">
+                ✓ Found: {parentInfo.name}
+              </p>
+            )}
+            {searchingParent && (
+              <p className="mt-1 text-sm text-muted-foreground">Searching...</p>
+            )}
+            <p className="mt-1 text-xs text-muted-foreground">
+              Enter the email of an existing parent/guardian account to link this patient
+            </p>
           </div>
           <div className="border-b pb-4 mb-4">
             <h3 className="text-lg font-semibold mb-4">Medical Information</h3>

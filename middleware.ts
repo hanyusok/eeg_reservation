@@ -5,21 +5,40 @@ import type { NextRequest } from "next/server"
 export default auth((req) => {
   const session = req.auth
   const path = req.nextUrl.pathname
+  const locale = path.startsWith("/ko")
+    ? "ko"
+    : path.startsWith("/en")
+      ? "en"
+      : null
+  const localePrefix = locale ? `/${locale}` : ""
+  const normalizedPath = locale ? path.slice(localePrefix.length) || "/" : path
 
   // Admin routes
-  if (path.startsWith("/admin") && session?.user?.role !== "admin" && session?.user?.role !== "doctor") {
-    return NextResponse.redirect(new URL("/dashboard", req.url))
+  if (
+    normalizedPath.startsWith("/admin") &&
+    session?.user?.role !== "admin" &&
+    session?.user?.role !== "doctor"
+  ) {
+    return NextResponse.redirect(new URL(`${localePrefix}/dashboard`, req.url))
   }
 
   // Doctor routes
-  if (path.startsWith("/doctor") && session?.user?.role !== "doctor" && session?.user?.role !== "admin") {
-    return NextResponse.redirect(new URL("/dashboard", req.url))
+  if (
+    normalizedPath.startsWith("/doctor") &&
+    session?.user?.role !== "doctor" &&
+    session?.user?.role !== "admin"
+  ) {
+    return NextResponse.redirect(new URL(`${localePrefix}/dashboard`, req.url))
   }
 
   // Patient/Parent routes
-  if (path.startsWith("/dashboard") && session?.user?.role !== "patient" && session?.user?.role !== "parent") {
+  if (
+    normalizedPath.startsWith("/dashboard") &&
+    session?.user?.role !== "patient" &&
+    session?.user?.role !== "parent"
+  ) {
     if (session?.user?.role === "admin" || session?.user?.role === "doctor") {
-      return NextResponse.redirect(new URL("/admin", req.url))
+      return NextResponse.redirect(new URL(`${localePrefix}/admin`, req.url))
     }
     return NextResponse.redirect(new URL("/auth/login", req.url))
   }
@@ -34,6 +53,12 @@ export const config = {
     "/doctor/:path*",
     "/appointments/:path*",
     "/patients/:path*",
+    "/(en|ko)/dashboard/:path*",
+    "/(en|ko)/admin/:path*",
+    "/(en|ko)/doctor/:path*",
+    "/(en|ko)/appointments/:path*",
+    "/(en|ko)/patients/:path*",
+    "/(en|ko)/profile/:path*",
   ],
 }
 

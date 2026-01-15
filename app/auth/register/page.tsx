@@ -1,32 +1,39 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import { useMessages } from "@/lib/i18n-client"
 
-const registerSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string(),
-  phone: z.string().optional(),
-  role: z.enum(["patient", "parent"]),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+const createRegisterSchema = (messages: any) =>
+  z
+    .object({
+      firstName: z.string().min(1, messages.auth.register.errors.firstNameRequired),
+      lastName: z.string().min(1, messages.auth.register.errors.lastNameRequired),
+      email: z.string().email(messages.auth.register.errors.invalidEmail),
+      password: z.string().min(6, messages.auth.register.errors.passwordMin),
+      confirmPassword: z.string(),
+      phone: z.string().optional(),
+      role: z.enum(["patient", "parent"]),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: messages.auth.register.errors.passwordMismatch,
+      path: ["confirmPassword"],
+    })
 
-type RegisterForm = z.infer<typeof registerSchema>
+type RegisterForm = z.infer<ReturnType<typeof createRegisterSchema>>
 
 export default function RegisterPage() {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const { messages } = useMessages()
+
+  const registerSchema = useMemo(() => createRegisterSchema(messages), [messages])
 
   const {
     register,
@@ -62,7 +69,7 @@ export default function RegisterPage() {
       const result = await response.json()
 
       if (!response.ok) {
-        setError(result.error || "Registration failed")
+        setError(result.error || messages.auth.register.errors.registrationFailed)
         setIsLoading(false)
         return
       }
@@ -70,7 +77,7 @@ export default function RegisterPage() {
       // Redirect to login
       router.push("/auth/login?registered=true")
     } catch (err) {
-      setError("An error occurred. Please try again.")
+      setError(messages.auth.register.errors.generic)
       setIsLoading(false)
     }
   }
@@ -79,11 +86,13 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8 shadow-lg">
         <div>
-          <h2 className="text-2xl font-bold text-center">Create an account</h2>
+          <h2 className="text-2xl font-bold text-center">
+            {messages.auth.register.title}
+          </h2>
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            Or{" "}
+            {messages.auth.register.subtitle}{" "}
             <Link href="/auth/login" className="text-primary hover:underline">
-              sign in to your existing account
+              {messages.auth.register.signIn}
             </Link>
           </p>
         </div>
@@ -98,7 +107,7 @@ export default function RegisterPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="firstName" className="block text-sm font-medium">
-                First name
+                {messages.auth.register.firstNameLabel}
               </label>
               <input
                 {...register("firstName")}
@@ -113,7 +122,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="lastName" className="block text-sm font-medium">
-                Last name
+                {messages.auth.register.lastNameLabel}
               </label>
               <input
                 {...register("lastName")}
@@ -129,14 +138,14 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium">
-              Email address
+              {messages.auth.register.emailLabel}
             </label>
             <input
               {...register("email")}
               type="email"
               id="email"
               className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              placeholder="you@example.com"
+              placeholder={messages.auth.register.emailPlaceholder}
             />
             {errors.email && (
               <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>
@@ -145,41 +154,41 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="phone" className="block text-sm font-medium">
-              Phone (optional)
+              {messages.auth.register.phoneLabel}
             </label>
             <input
               {...register("phone")}
               type="tel"
               id="phone"
               className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              placeholder="+1 (555) 123-4567"
+              placeholder={messages.auth.register.phonePlaceholder}
             />
           </div>
 
           <div>
             <label htmlFor="role" className="block text-sm font-medium">
-              Account type
+              {messages.auth.register.roleLabel}
             </label>
             <select
               {...register("role")}
               id="role"
               className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <option value="parent">Parent/Guardian</option>
-              <option value="patient">Patient</option>
+              <option value="parent">{messages.auth.register.roleParent}</option>
+              <option value="patient">{messages.auth.register.rolePatient}</option>
             </select>
           </div>
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium">
-              Password
+              {messages.auth.register.passwordLabel}
             </label>
             <input
               {...register("password")}
               type="password"
               id="password"
               className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              placeholder="••••••••"
+              placeholder={messages.auth.register.passwordPlaceholder}
             />
             {errors.password && (
               <p className="mt-1 text-sm text-destructive">{errors.password.message}</p>
@@ -188,14 +197,14 @@ export default function RegisterPage() {
 
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium">
-              Confirm password
+              {messages.auth.register.confirmPasswordLabel}
             </label>
             <input
               {...register("confirmPassword")}
               type="password"
               id="confirmPassword"
               className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              placeholder="••••••••"
+              placeholder={messages.auth.register.confirmPasswordPlaceholder}
             />
             {errors.confirmPassword && (
               <p className="mt-1 text-sm text-destructive">{errors.confirmPassword.message}</p>
@@ -203,7 +212,9 @@ export default function RegisterPage() {
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Create account"}
+            {isLoading
+              ? messages.auth.register.creatingAccount
+              : messages.auth.register.createAccount}
           </Button>
         </form>
       </div>

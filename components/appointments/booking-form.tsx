@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
@@ -9,16 +9,22 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useMessages } from "@/lib/i18n-client"
 
-const bookingSchema = z.object({
-  patientId: z.string().uuid("Please select a patient"),
-  appointmentType: z.enum(["initial_consultation", "eeg_monitoring", "follow_up"]),
-  scheduledAt: z.string().min(1, "Please select a date and time"),
-  durationMinutes: z.number().int().positive().default(60),
-  notes: z.string().optional(),
-})
+const createBookingSchema = (messages: any) =>
+  z.object({
+    patientId: z.string().uuid(messages.bookingForm.errors.selectPatient),
+    appointmentType: z.enum([
+      "initial_consultation",
+      "eeg_monitoring",
+      "follow_up",
+    ]),
+    scheduledAt: z.string().min(1, messages.bookingForm.errors.selectDateTime),
+    durationMinutes: z.number().int().positive().default(60),
+    notes: z.string().optional(),
+  })
 
-type BookingForm = z.infer<typeof bookingSchema>
+type BookingForm = z.infer<ReturnType<typeof createBookingSchema>>
 
 interface Patient {
   id: string
@@ -37,6 +43,8 @@ export default function BookingForm({
   createPatientHref?: string
 }) {
   const router = useRouter()
+  const { messages } = useMessages()
+  const bookingSchema = useMemo(() => createBookingSchema(messages), [messages])
   const [patients, setPatients] = useState<Patient[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -75,7 +83,7 @@ export default function BookingForm({
       setLoadingPatients(true)
       const response = await fetch("/api/patients")
       if (!response.ok) {
-        throw new Error("Failed to fetch patients")
+        throw new Error(messages.bookingForm.errors.fetchPatientsFailed)
       }
       const data = await response.json()
       setPatients(data.patients || [])
@@ -105,7 +113,7 @@ export default function BookingForm({
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || "Failed to create appointment")
+        throw new Error(result.error || messages.bookingForm.errors.createFailed)
       }
 
       router.push(redirectTo || "/appointments")
@@ -117,7 +125,9 @@ export default function BookingForm({
   }
 
   if (loadingPatients) {
-    return <div className="text-center py-8">Loading patients...</div>
+    return (
+      <div className="text-center py-8">{messages.bookingForm.loadingPatients}</div>
+    )
   }
 
   if (patients.length === 0) {
@@ -125,10 +135,10 @@ export default function BookingForm({
     return (
       <div className="rounded-lg border bg-card p-8 text-center">
         <p className="text-muted-foreground mb-4">
-          No patients found. Please create a patient profile first.
+          {messages.bookingForm.noPatients}
         </p>
         <Button asChild>
-          <Link href={newPatientHref}>Create Patient Profile</Link>
+          <Link href={newPatientHref}>{messages.bookingForm.createPatient}</Link>
         </Button>
       </div>
     )
@@ -143,13 +153,13 @@ export default function BookingForm({
       )}
 
       <div>
-        <Label htmlFor="patientId">Select Patient *</Label>
+        <Label htmlFor="patientId">{messages.bookingForm.patientLabel}</Label>
         <select
           {...register("patientId")}
           id="patientId"
           className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <option value="">-- Select a patient --</option>
+          <option value="">{messages.bookingForm.patientPlaceholder}</option>
           {patients.map((patient) => (
             <option key={patient.id} value={patient.id}>
               {patient.user.firstName} {patient.user.lastName} (DOB:{" "}
@@ -165,15 +175,17 @@ export default function BookingForm({
       </div>
 
       <div>
-        <Label htmlFor="appointmentType">Appointment Type *</Label>
+        <Label htmlFor="appointmentType">{messages.bookingForm.typeLabel}</Label>
         <select
           {...register("appointmentType")}
           id="appointmentType"
           className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <option value="initial_consultation">Initial Consultation</option>
-          <option value="eeg_monitoring">EEG Monitoring</option>
-          <option value="follow_up">Follow-up</option>
+          <option value="initial_consultation">
+            {messages.bookingForm.types.initialConsultation}
+          </option>
+          <option value="eeg_monitoring">{messages.bookingForm.types.eegMonitoring}</option>
+          <option value="follow_up">{messages.bookingForm.types.followUp}</option>
         </select>
         {errors.appointmentType && (
           <p className="mt-1 text-sm text-destructive">
@@ -183,7 +195,7 @@ export default function BookingForm({
       </div>
 
       <div>
-        <Label htmlFor="scheduledAt">Date & Time *</Label>
+        <Label htmlFor="scheduledAt">{messages.bookingForm.dateTimeLabel}</Label>
         <Input
           {...register("scheduledAt")}
           type="datetime-local"
@@ -198,7 +210,7 @@ export default function BookingForm({
       </div>
 
       <div>
-        <Label htmlFor="durationMinutes">Duration (minutes) *</Label>
+        <Label htmlFor="durationMinutes">{messages.bookingForm.durationLabel}</Label>
         <Input
           {...register("durationMinutes", { valueAsNumber: true })}
           type="number"
@@ -215,26 +227,26 @@ export default function BookingForm({
       </div>
 
       <div>
-        <Label htmlFor="notes">Notes (optional)</Label>
+        <Label htmlFor="notes">{messages.bookingForm.notesLabel}</Label>
         <textarea
           {...register("notes")}
           id="notes"
           rows={4}
           className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          placeholder="Any additional information about this appointment..."
+          placeholder={messages.bookingForm.notesPlaceholder}
         />
       </div>
 
       <div className="flex gap-4">
         <Button type="submit" disabled={loading}>
-          {loading ? "Booking..." : "Book Appointment"}
+          {loading ? messages.bookingForm.booking : messages.bookingForm.submit}
         </Button>
         <Button
           type="button"
           variant="outline"
           onClick={() => router.back()}
         >
-          Cancel
+          {messages.common.cancel}
         </Button>
       </div>
     </form>

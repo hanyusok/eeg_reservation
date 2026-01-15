@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import PatientDetail from "@/components/patients/patient-detail"
 import { BackButton } from "@/components/ui/back-button"
+import { getMessages } from "@/lib/i18n"
 
 export default async function PatientDetailPage({
   params,
@@ -9,6 +10,7 @@ export default async function PatientDetailPage({
   params: { id: string }
 }) {
   const session = await auth()
+  const messages = getMessages("en")
 
   if (!session) {
     redirect("/auth/login")
@@ -20,9 +22,9 @@ export default async function PatientDetailPage({
         <div className="flex items-center gap-4 mb-4">
           <BackButton href="/patients" />
         </div>
-        <h1 className="text-3xl font-bold">Patient Details</h1>
+        <h1 className="text-3xl font-bold">{messages.patientsDetail.title}</h1>
         <p className="text-muted-foreground">
-          View and manage patient information
+          {messages.patientsDetail.subtitle}
         </p>
       </div>
 

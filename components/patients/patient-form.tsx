@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -8,25 +8,32 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useMessages } from "@/lib/i18n-client"
 
-const patientSchema = z.object({
-  // User information (for creating new user account)
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().optional(),
-  // Family relationship
-  parentEmail: z.string().email("Invalid email address").optional().or(z.literal("")),
-  // Patient information
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
-  medicalRecordNumber: z.string().optional(),
-  medicalHistory: z.string().optional(),
-  currentMedications: z.string().optional(),
-  emergencyContactName: z.string().min(1, "Emergency contact name is required"),
-  emergencyContactPhone: z.string().min(1, "Emergency contact phone is required"),
-})
+const createPatientSchema = (messages: any) =>
+  z.object({
+    firstName: z.string().min(1, messages.patientForm.errors.firstNameRequired),
+    lastName: z.string().min(1, messages.patientForm.errors.lastNameRequired),
+    email: z.string().email(messages.patientForm.errors.invalidEmail),
+    phone: z.string().optional(),
+    parentEmail: z
+      .string()
+      .email(messages.patientForm.errors.invalidEmail)
+      .optional()
+      .or(z.literal("")),
+    dateOfBirth: z.string().min(1, messages.patientForm.errors.dobRequired),
+    medicalRecordNumber: z.string().optional(),
+    medicalHistory: z.string().optional(),
+    currentMedications: z.string().optional(),
+    emergencyContactName: z
+      .string()
+      .min(1, messages.patientForm.errors.emergencyNameRequired),
+    emergencyContactPhone: z
+      .string()
+      .min(1, messages.patientForm.errors.emergencyPhoneRequired),
+  })
 
-type PatientForm = z.infer<typeof patientSchema>
+type PatientForm = z.infer<ReturnType<typeof createPatientSchema>>
 
 export default function PatientForm({
   patientId,
@@ -38,6 +45,8 @@ export default function PatientForm({
   redirectTo?: string
 }) {
   const router = useRouter()
+  const { messages } = useMessages()
+  const patientSchema = useMemo(() => createPatientSchema(messages), [messages])
   const [users, setUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -78,7 +87,7 @@ export default function PatientForm({
           })
         } else {
           setParentInfo(null)
-          setError("User found but is not a parent account")
+          setError(messages.patientForm.errors.notParentAccount)
         }
       } else {
         setParentInfo(null)
@@ -115,7 +124,7 @@ export default function PatientForm({
         const result = await response.json()
 
         if (!response.ok) {
-          throw new Error(result.error || "Failed to update patient")
+          throw new Error(result.error || messages.patientForm.errors.updateFailed)
         }
 
         router.push(redirectTo || "/patients")
@@ -150,7 +159,9 @@ export default function PatientForm({
               // Use existing user
               await createPatientProfile(userData.user.id, data)
             } else {
-              throw new Error(userResult.error || "Failed to create user account")
+            throw new Error(
+              userResult.error || messages.patientForm.errors.createUserFailed
+            )
             }
           } else {
             // Show detailed validation errors if available
@@ -158,9 +169,13 @@ export default function PatientForm({
               const errorMessages = userResult.details.map((err: any) => 
                 `${err.path.join('.')}: ${err.message}`
               ).join(', ')
-              throw new Error(errorMessages || userResult.error || "Failed to create user account")
+            throw new Error(
+              errorMessages ||
+                userResult.error ||
+                messages.patientForm.errors.createUserFailed
+            )
             }
-            throw new Error(userResult.error || "Failed to create user account")
+          throw new Error(userResult.error || messages.patientForm.errors.createUserFailed)
           }
         } else {
           // Step 2: Create patient profile
@@ -220,9 +235,13 @@ export default function PatientForm({
         const errorMessages = result.details.map((err: any) => 
           `${err.path.join('.')}: ${err.message}`
         ).join(', ')
-        throw new Error(errorMessages || result.error || "Failed to create patient profile")
+        throw new Error(
+          errorMessages ||
+            result.error ||
+            messages.patientForm.errors.createPatientFailed
+        )
       }
-      throw new Error(result.error || "Failed to create patient profile")
+      throw new Error(result.error || messages.patientForm.errors.createPatientFailed)
     }
 
     router.push(redirectTo || "/patients")
@@ -240,11 +259,13 @@ export default function PatientForm({
       {!isEditMode && (
         <>
           <div className="border-b pb-4 mb-4">
-            <h3 className="text-lg font-semibold mb-4">Patient Information</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              {messages.patientForm.sections.patientInfo}
+            </h3>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="firstName">First Name *</Label>
+              <Label htmlFor="firstName">{messages.patientForm.labels.firstName}</Label>
               <Input
                 {...register("firstName")}
                 type="text"
@@ -257,7 +278,7 @@ export default function PatientForm({
               )}
             </div>
             <div>
-              <Label htmlFor="lastName">Last Name *</Label>
+              <Label htmlFor="lastName">{messages.patientForm.labels.lastName}</Label>
               <Input
                 {...register("lastName")}
                 type="text"
@@ -271,7 +292,7 @@ export default function PatientForm({
             </div>
           </div>
           <div>
-            <Label htmlFor="email">Email *</Label>
+            <Label htmlFor="email">{messages.patientForm.labels.email}</Label>
             <Input
               {...register("email")}
               type="email"
@@ -284,21 +305,23 @@ export default function PatientForm({
             )}
           </div>
           <div>
-            <Label htmlFor="phone">Phone</Label>
+            <Label htmlFor="phone">{messages.patientForm.labels.phone}</Label>
             <Input
               {...register("phone")}
               type="tel"
               id="phone"
-              placeholder="+1 (555) 123-4567"
+              placeholder={messages.patientForm.placeholders.phone}
             />
           </div>
           <div>
-            <Label htmlFor="parentEmail">Parent/Guardian Email (Optional)</Label>
+            <Label htmlFor="parentEmail">
+              {messages.patientForm.labels.parentEmail}
+            </Label>
             <Input
               {...register("parentEmail")}
               type="email"
               id="parentEmail"
-              placeholder="parent@example.com"
+              placeholder={messages.patientForm.placeholders.parentEmail}
               onBlur={(e) => {
                 if (e.target.value) {
                   searchParent(e.target.value)
@@ -307,24 +330,28 @@ export default function PatientForm({
             />
             {parentInfo && (
               <p className="mt-1 text-sm text-green-600">
-                ✓ Found: {parentInfo.name}
+                {messages.patientForm.parentFound} {parentInfo.name}
               </p>
             )}
             {searchingParent && (
-              <p className="mt-1 text-sm text-muted-foreground">Searching...</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {messages.patientForm.searching}
+              </p>
             )}
             <p className="mt-1 text-xs text-muted-foreground">
-              Enter the email of an existing parent/guardian account to link this patient
+              {messages.patientForm.parentHint}
             </p>
           </div>
           <div className="border-b pb-4 mb-4">
-            <h3 className="text-lg font-semibold mb-4">Medical Information</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              {messages.patientForm.sections.medicalInfo}
+            </h3>
           </div>
         </>
       )}
 
       <div>
-        <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+        <Label htmlFor="dateOfBirth">{messages.patientForm.labels.dateOfBirth}</Label>
         <Input
           {...register("dateOfBirth")}
           type="date"
@@ -339,39 +366,45 @@ export default function PatientForm({
       </div>
 
       <div>
-        <Label htmlFor="medicalRecordNumber">Medical Record Number</Label>
+        <Label htmlFor="medicalRecordNumber">
+          {messages.patientForm.labels.medicalRecordNumber}
+        </Label>
         <Input
           {...register("medicalRecordNumber")}
           type="text"
           id="medicalRecordNumber"
-          placeholder="Optional"
+          placeholder={messages.patientForm.placeholders.medicalRecordNumber}
         />
       </div>
 
       <div>
-        <Label htmlFor="medicalHistory">Medical History</Label>
+        <Label htmlFor="medicalHistory">{messages.patientForm.labels.medicalHistory}</Label>
         <textarea
           {...register("medicalHistory")}
           id="medicalHistory"
           rows={4}
           className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          placeholder="Previous medical conditions, surgeries, etc."
+          placeholder={messages.patientForm.placeholders.medicalHistory}
         />
       </div>
 
       <div>
-        <Label htmlFor="currentMedications">Current Medications</Label>
+        <Label htmlFor="currentMedications">
+          {messages.patientForm.labels.currentMedications}
+        </Label>
         <textarea
           {...register("currentMedications")}
           id="currentMedications"
           rows={3}
           className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          placeholder="List current medications and dosages"
+          placeholder={messages.patientForm.placeholders.currentMedications}
         />
       </div>
 
       <div>
-        <Label htmlFor="emergencyContactName">Emergency Contact Name *</Label>
+        <Label htmlFor="emergencyContactName">
+          {messages.patientForm.labels.emergencyContactName}
+        </Label>
         <Input
           {...register("emergencyContactName")}
           type="text"
@@ -385,12 +418,14 @@ export default function PatientForm({
       </div>
 
       <div>
-        <Label htmlFor="emergencyContactPhone">Emergency Contact Phone *</Label>
+        <Label htmlFor="emergencyContactPhone">
+          {messages.patientForm.labels.emergencyContactPhone}
+        </Label>
         <Input
           {...register("emergencyContactPhone")}
           type="tel"
           id="emergencyContactPhone"
-          placeholder="+1 (555) 123-4567"
+          placeholder={messages.patientForm.placeholders.emergencyContactPhone}
         />
         {errors.emergencyContactPhone && (
           <p className="mt-1 text-sm text-destructive">
@@ -401,14 +436,18 @@ export default function PatientForm({
 
       <div className="flex gap-4">
         <Button type="submit" disabled={loading}>
-          {loading ? "Saving..." : isEditMode ? "Update Patient" : "Create Patient"}
+          {loading
+            ? messages.patientForm.actions.saving
+            : isEditMode
+            ? messages.patientForm.actions.update
+            : messages.patientForm.actions.create}
         </Button>
         <Button
           type="button"
           variant="outline"
           onClick={() => router.back()}
         >
-          Cancel
+          {messages.common.cancel}
         </Button>
       </div>
     </form>

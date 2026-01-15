@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useMessages } from "@/lib/i18n-client"
 
 interface Document {
   id: string
@@ -29,6 +30,7 @@ export default function DocumentList({
   const [error, setError] = useState<string | null>(null)
   const [showUpload, setShowUpload] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const { messages } = useMessages()
 
   useEffect(() => {
     fetchDocuments()
@@ -87,7 +89,7 @@ export default function DocumentList({
 
         if (!response.ok) {
           const result = await response.json()
-          throw new Error(result.error || "Failed to upload document")
+          throw new Error(result.error || messages.documentList.errors.uploadFailed)
         }
 
         setSelectedFile(null)
@@ -134,9 +136,9 @@ export default function DocumentList({
   return (
     <div className="rounded-lg border bg-card p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Medical Documents</h2>
+        <h2 className="text-xl font-semibold">{messages.documentList.title}</h2>
         <Button onClick={() => setShowUpload(!showUpload)} variant="outline" size="sm">
-          {showUpload ? "Cancel" : "Upload Document"}
+          {showUpload ? messages.common.cancel : messages.documentList.uploadToggle}
         </Button>
       </div>
 
@@ -145,7 +147,7 @@ export default function DocumentList({
         <div className="mb-6 p-4 rounded-lg border bg-background">
           <div className="space-y-4">
             <div>
-              <Label htmlFor="file">Select File</Label>
+              <Label htmlFor="file">{messages.documentList.selectFile}</Label>
               <Input
                 id="file"
                 type="file"
@@ -162,7 +164,9 @@ export default function DocumentList({
                   disabled={uploading}
                   size="sm"
                 >
-                  {uploading ? "Uploading..." : "Upload"}
+                  {uploading
+                    ? messages.documentList.uploading
+                    : messages.documentList.upload}
                 </Button>
               </div>
             )}
@@ -172,10 +176,12 @@ export default function DocumentList({
 
       {/* Documents List */}
       {loading ? (
-        <p className="text-center py-4 text-muted-foreground">Loading documents...</p>
+        <p className="text-center py-4 text-muted-foreground">
+          {messages.documentList.loading}
+        </p>
       ) : documents.length === 0 ? (
         <p className="text-center py-4 text-muted-foreground">
-          No documents uploaded yet.
+          {messages.documentList.empty}
         </p>
       ) : (
         <div className="space-y-3">
@@ -187,8 +193,9 @@ export default function DocumentList({
               <div className="flex-1">
                 <p className="font-medium">{doc.fileName}</p>
                 <p className="text-sm text-muted-foreground">
-                  Uploaded by {doc.uploader.firstName} {doc.uploader.lastName} on{" "}
-                  {formatDate(doc.uploadedAt)}
+                  {messages.documentList.uploadedBy
+                    .replace("{{name}}", `${doc.uploader.firstName} ${doc.uploader.lastName}`)
+                    .replace("{{date}}", formatDate(doc.uploadedAt))}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -197,7 +204,7 @@ export default function DocumentList({
                   variant="outline"
                   size="sm"
                 >
-                  Download
+                  {messages.documentList.download}
                 </Button>
               </div>
             </div>

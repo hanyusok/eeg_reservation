@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
+import { useMessages } from "@/lib/i18n-client"
 
 interface DashboardStats {
   totalPatients: number
@@ -14,6 +17,9 @@ interface DashboardStats {
 }
 
 export default function AdminDashboard() {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const { messages } = useMessages()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [todayAppointments, setTodayAppointments] = useState<any[]>([])
@@ -65,15 +71,17 @@ export default function AdminDashboard() {
   }
 
   if (loading) {
-    return <div className="text-center py-8">Loading dashboard...</div>
+    return (
+      <div className="text-center py-8">{messages.adminDashboard.loading}</div>
+    )
   }
 
   if (error) {
     return (
       <div className="text-center py-8 text-destructive">
-        Error: {error}
+        {messages.common.errorPrefix} {error}
         <Button onClick={fetchDashboardData} className="ml-4" variant="outline">
-          Retry
+          {messages.common.retry}
         </Button>
       </div>
     )
@@ -85,34 +93,38 @@ export default function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border bg-card p-6">
           <h3 className="text-sm font-medium text-muted-foreground mb-2">
-            Total Patients
+            {messages.adminDashboard.stats.totalPatients}
           </h3>
           <p className="text-3xl font-bold">{stats?.totalPatients || 0}</p>
           <Button asChild variant="link" className="mt-2 p-0 h-auto">
-            <Link href="/admin/patients">View all →</Link>
+            <Link href={withLocalePath(locale, "/admin/patients")}>
+              {messages.adminDashboard.viewAll}
+            </Link>
           </Button>
         </div>
 
         <div className="rounded-lg border bg-card p-6">
           <h3 className="text-sm font-medium text-muted-foreground mb-2">
-            Total Appointments
+            {messages.adminDashboard.stats.totalAppointments}
           </h3>
           <p className="text-3xl font-bold">{stats?.totalAppointments || 0}</p>
           <Button asChild variant="link" className="mt-2 p-0 h-auto">
-            <Link href="/admin/appointments">View all →</Link>
+            <Link href={withLocalePath(locale, "/admin/appointments")}>
+              {messages.adminDashboard.viewAll}
+            </Link>
           </Button>
         </div>
 
         <div className="rounded-lg border bg-card p-6">
           <h3 className="text-sm font-medium text-muted-foreground mb-2">
-            Today's Appointments
+            {messages.adminDashboard.stats.todayAppointments}
           </h3>
           <p className="text-3xl font-bold">{stats?.todayAppointments || 0}</p>
         </div>
 
         <div className="rounded-lg border bg-card p-6">
           <h3 className="text-sm font-medium text-muted-foreground mb-2">
-            Upcoming
+            {messages.adminDashboard.stats.upcoming}
           </h3>
           <p className="text-3xl font-bold">
             {stats?.upcomingAppointments || 0}
@@ -123,33 +135,39 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-3">
         <Button asChild className="h-auto py-6">
-          <Link href="/admin/appointments/new">
+          <Link href={withLocalePath(locale, "/admin/appointments/new")}>
             <div className="text-left">
-              <div className="font-semibold">Create Appointment</div>
+              <div className="font-semibold">
+                {messages.adminDashboard.actions.createAppointment}
+              </div>
               <div className="text-sm font-normal opacity-90">
-                Schedule a new appointment
+                {messages.adminDashboard.actions.createAppointmentHint}
               </div>
             </div>
           </Link>
         </Button>
 
         <Button asChild variant="outline" className="h-auto py-6">
-          <Link href="/admin/patients/new">
+          <Link href={withLocalePath(locale, "/admin/patients/new")}>
             <div className="text-left">
-              <div className="font-semibold">Add Patient</div>
+              <div className="font-semibold">
+                {messages.adminDashboard.actions.addPatient}
+              </div>
               <div className="text-sm font-normal opacity-90">
-                Create a new patient profile
+                {messages.adminDashboard.actions.addPatientHint}
               </div>
             </div>
           </Link>
         </Button>
 
         <Button asChild variant="outline" className="h-auto py-6">
-          <Link href="/admin/settings">
+          <Link href={withLocalePath(locale, "/admin/settings")}>
             <div className="text-left">
-              <div className="font-semibold">Settings</div>
+              <div className="font-semibold">
+                {messages.adminDashboard.actions.settings}
+              </div>
               <div className="text-sm font-normal opacity-90">
-                Configure system settings
+                {messages.adminDashboard.actions.settingsHint}
               </div>
             </div>
           </Link>
@@ -159,23 +177,35 @@ export default function AdminDashboard() {
       {/* Appointment Quick Actions */}
       <div className="rounded-lg border bg-card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Appointment Actions</h2>
+          <h2 className="text-xl font-semibold">
+            {messages.adminDashboard.actions.title}
+          </h2>
           <Button asChild variant="outline" size="sm">
-            <Link href="/admin/appointments">Manage All</Link>
+            <Link href={withLocalePath(locale, "/admin/appointments")}>
+              {messages.adminDashboard.actions.manageAll}
+            </Link>
           </Button>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Button asChild variant="outline" className="justify-start">
-            <Link href="/admin/appointments?status=scheduled">Scheduled</Link>
+            <Link href={withLocalePath(locale, "/admin/appointments?status=scheduled")}>
+              {messages.adminDashboard.actions.scheduled}
+            </Link>
           </Button>
           <Button asChild variant="outline" className="justify-start">
-            <Link href="/admin/appointments?status=completed">Completed</Link>
+            <Link href={withLocalePath(locale, "/admin/appointments?status=completed")}>
+              {messages.adminDashboard.actions.completed}
+            </Link>
           </Button>
           <Button asChild variant="outline" className="justify-start">
-            <Link href="/admin/appointments?status=cancelled">Cancelled</Link>
+            <Link href={withLocalePath(locale, "/admin/appointments?status=cancelled")}>
+              {messages.adminDashboard.actions.cancelled}
+            </Link>
           </Button>
           <Button asChild variant="outline" className="justify-start">
-            <Link href="/admin/appointments?status=rescheduled">Rescheduled</Link>
+            <Link href={withLocalePath(locale, "/admin/appointments?status=rescheduled")}>
+              {messages.adminDashboard.actions.rescheduled}
+            </Link>
           </Button>
         </div>
       </div>
@@ -183,15 +213,19 @@ export default function AdminDashboard() {
       {/* Today's Appointments */}
       <div className="rounded-lg border bg-card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Today's Appointments</h2>
+          <h2 className="text-xl font-semibold">
+            {messages.adminDashboard.today.title}
+          </h2>
           <Button asChild variant="outline" size="sm">
-            <Link href="/admin/appointments">View All</Link>
+            <Link href={withLocalePath(locale, "/admin/appointments")}>
+              {messages.adminDashboard.today.viewAll}
+            </Link>
           </Button>
         </div>
 
         {todayAppointments.length === 0 ? (
           <p className="text-muted-foreground text-center py-8">
-            No appointments scheduled for today
+            {messages.adminDashboard.today.empty}
           </p>
         ) : (
           <div className="space-y-3">
@@ -232,8 +266,8 @@ export default function AdminDashboard() {
                   </p>
                 </div>
                 <Button asChild variant="ghost" size="sm">
-                  <Link href={`/admin/appointments/${appointment.id}`}>
-                    View
+                  <Link href={withLocalePath(locale, `/admin/appointments/${appointment.id}`)}>
+                    {messages.adminDashboard.today.view}
                   </Link>
                 </Button>
               </div>

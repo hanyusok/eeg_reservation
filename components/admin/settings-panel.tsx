@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useMessages } from "@/lib/i18n-client"
 
 export default function SettingsPanel() {
   const [settings, setSettings] = useState({
@@ -14,6 +15,7 @@ export default function SettingsPanel() {
   })
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
+  const { messages } = useMessages()
 
   const handleSave = async () => {
     setSaving(true)
@@ -22,10 +24,10 @@ export default function SettingsPanel() {
     try {
       // In a real implementation, you'd save these to a database
       // For now, we'll just show a message
-      setMessage("Settings saved! (Note: In production, these would be stored securely)")
+      setMessage(messages.settingsPanel.messages.saved)
       setTimeout(() => setMessage(null), 3000)
     } catch (error) {
-      setMessage("Failed to save settings")
+      setMessage(messages.settingsPanel.messages.failed)
     } finally {
       setSaving(false)
     }
@@ -35,21 +37,25 @@ export default function SettingsPanel() {
     <div className="space-y-6">
       {/* Zapier Integration */}
       <div className="rounded-lg border bg-card p-6">
-        <h2 className="text-xl font-semibold mb-4">Zapier Integration</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {messages.settingsPanel.zapier.title}
+        </h2>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="zapierWebhookUrl">Zapier Webhook URL</Label>
+            <Label htmlFor="zapierWebhookUrl">
+              {messages.settingsPanel.zapier.webhookLabel}
+            </Label>
             <Input
               id="zapierWebhookUrl"
               type="url"
-              placeholder="https://hooks.zapier.com/hooks/catch/..."
+              placeholder={messages.settingsPanel.zapier.webhookPlaceholder}
               value={settings.zapierWebhookUrl}
               onChange={(e) =>
                 setSettings({ ...settings, zapierWebhookUrl: e.target.value })
               }
             />
             <p className="text-sm text-muted-foreground mt-1">
-              Get this URL from your Zapier webhook trigger
+              {messages.settingsPanel.zapier.webhookHint}
             </p>
           </div>
         </div>
@@ -57,10 +63,14 @@ export default function SettingsPanel() {
 
       {/* Email Configuration */}
       <div className="rounded-lg border bg-card p-6">
-        <h2 className="text-xl font-semibold mb-4">Email Configuration</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {messages.settingsPanel.email.title}
+        </h2>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="emailProvider">Email Provider</Label>
+            <Label htmlFor="emailProvider">
+              {messages.settingsPanel.email.providerLabel}
+            </Label>
             <select
               id="emailProvider"
               value={settings.emailProvider}
@@ -69,13 +79,13 @@ export default function SettingsPanel() {
               }
               className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
-              <option value="console">Console (Development)</option>
-              <option value="resend">Resend</option>
-              <option value="sendgrid">SendGrid</option>
-              <option value="smtp">SMTP</option>
+              <option value="console">{messages.settingsPanel.providers.console}</option>
+              <option value="resend">{messages.settingsPanel.providers.resend}</option>
+              <option value="sendgrid">{messages.settingsPanel.providers.sendgrid}</option>
+              <option value="smtp">{messages.settingsPanel.providers.smtp}</option>
             </select>
             <p className="text-sm text-muted-foreground mt-1">
-              Configure email provider in environment variables
+              {messages.settingsPanel.email.providerHint}
             </p>
           </div>
         </div>
@@ -83,10 +93,14 @@ export default function SettingsPanel() {
 
       {/* SMS Configuration */}
       <div className="rounded-lg border bg-card p-6">
-        <h2 className="text-xl font-semibold mb-4">SMS Configuration</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {messages.settingsPanel.sms.title}
+        </h2>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="smsProvider">SMS Provider</Label>
+            <Label htmlFor="smsProvider">
+              {messages.settingsPanel.sms.providerLabel}
+            </Label>
             <select
               id="smsProvider"
               value={settings.smsProvider}
@@ -95,11 +109,11 @@ export default function SettingsPanel() {
               }
               className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
-              <option value="console">Console (Development)</option>
-              <option value="twilio">Twilio</option>
+              <option value="console">{messages.settingsPanel.providers.console}</option>
+              <option value="twilio">{messages.settingsPanel.providers.twilio}</option>
             </select>
             <p className="text-sm text-muted-foreground mt-1">
-              Configure SMS provider in environment variables
+              {messages.settingsPanel.sms.providerHint}
             </p>
           </div>
         </div>
@@ -107,21 +121,25 @@ export default function SettingsPanel() {
 
       {/* Calendly Configuration */}
       <div className="rounded-lg border bg-card p-6">
-        <h2 className="text-xl font-semibold mb-4">Calendly Integration</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {messages.settingsPanel.calendly.title}
+        </h2>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="calendlyApiKey">Calendly API Key</Label>
+            <Label htmlFor="calendlyApiKey">
+              {messages.settingsPanel.calendly.apiKeyLabel}
+            </Label>
             <Input
               id="calendlyApiKey"
               type="password"
-              placeholder="Enter Calendly API key"
+              placeholder={messages.settingsPanel.calendly.apiKeyPlaceholder}
               value={settings.calendlyApiKey}
               onChange={(e) =>
                 setSettings({ ...settings, calendlyApiKey: e.target.value })
               }
             />
             <p className="text-sm text-muted-foreground mt-1">
-              Configure in environment variables for security
+              {messages.settingsPanel.calendly.apiKeyHint}
             </p>
           </div>
         </div>
@@ -130,7 +148,7 @@ export default function SettingsPanel() {
       {message && (
         <div
           className={`rounded-md p-3 ${
-            message.includes("Failed")
+            message.includes(messages.settingsPanel.messages.failedPrefix)
               ? "bg-destructive/10 text-destructive"
               : "bg-green-100 text-green-800"
           }`}
@@ -141,18 +159,17 @@ export default function SettingsPanel() {
 
       <div className="flex gap-4">
         <Button onClick={handleSave} disabled={saving}>
-          {saving ? "Saving..." : "Save Settings"}
+          {saving ? messages.settingsPanel.saving : messages.settingsPanel.save}
         </Button>
         <Button variant="outline" onClick={() => setMessage(null)}>
-          Cancel
+          {messages.common.cancel}
         </Button>
       </div>
 
       <div className="rounded-lg border bg-yellow-50 p-4">
         <p className="text-sm text-yellow-800">
-          <strong>Note:</strong> For security, sensitive configuration like API keys should be
-          stored in environment variables, not in the database. This UI is for display
-          purposes only.
+          <strong>{messages.settingsPanel.noteTitle}</strong>{" "}
+          {messages.settingsPanel.noteBody}
         </p>
       </div>
     </div>

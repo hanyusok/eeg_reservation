@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
+import { useMessages } from "@/lib/i18n-client"
 
 interface Patient {
   id: string
@@ -24,6 +27,9 @@ interface Patient {
 }
 
 export default function PatientsList() {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const { messages } = useMessages()
   const [patients, setPatients] = useState<Patient[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -37,7 +43,7 @@ export default function PatientsList() {
       setLoading(true)
       const response = await fetch("/api/patients")
       if (!response.ok) {
-        throw new Error("Failed to fetch patients")
+        throw new Error(messages.patientsList.errors.fetchFailed)
       }
       const data = await response.json()
       setPatients(data.patients || [])
@@ -68,26 +74,31 @@ export default function PatientsList() {
   }
 
   if (loading) {
-    return <div className="text-center py-8">Loading patients...</div>
+    return (
+      <div className="text-center py-8">{messages.patientsList.loading}</div>
+    )
   }
 
   if (error) {
     return (
       <div className="text-center py-8 text-destructive">
-        Error: {error}
+        {messages.common.errorPrefix} {error}
         <Button onClick={fetchPatients} className="ml-4" variant="outline">
-          Retry
+          {messages.common.retry}
         </Button>
       </div>
     )
   }
 
   if (patients.length === 0) {
+    const newPatientHref = withLocalePath(locale, "/patients/new")
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">No patients found.</p>
+        <p className="text-muted-foreground mb-4">
+          {messages.patientsList.empty}
+        </p>
         <Button asChild>
-          <Link href="/patients/new">Add Your First Patient</Link>
+          <Link href={newPatientHref}>{messages.patientsList.cta}</Link>
         </Button>
       </div>
     )
@@ -106,31 +117,51 @@ export default function PatientsList() {
                 {patient.user.firstName} {patient.user.lastName}
               </h3>
               <div className="space-y-1 text-sm text-muted-foreground">
-                <p>Age: {calculateAge(patient.dateOfBirth)} years old</p>
-                <p>Date of Birth: {formatDate(patient.dateOfBirth)}</p>
+                <p>
+                  {messages.patientsList.ageLabel}{" "}
+                  {calculateAge(patient.dateOfBirth)} {messages.patientsList.yearsOld}
+                </p>
+                <p>
+                  {messages.patientsList.dobLabel} {formatDate(patient.dateOfBirth)}
+                </p>
                 {patient.medicalRecordNumber && (
-                  <p>MRN: {patient.medicalRecordNumber}</p>
+                  <p>
+                    {messages.patientsList.mrnLabel} {patient.medicalRecordNumber}
+                  </p>
                 )}
                 {patient.parent && (
                   <p>
-                    Parent: {patient.parent.firstName} {patient.parent.lastName}
+                    {messages.patientsList.parentLabel} {patient.parent.firstName}{" "}
+                    {patient.parent.lastName}
                   </p>
                 )}
-                <p>Appointments: {patient._count.appointments}</p>
+                <p>
+                  {messages.patientsList.appointmentsLabel}{" "}
+                  {patient._count.appointments}
+                </p>
               </div>
             </div>
             <div className="flex gap-2">
               <Button asChild size="sm">
-                <Link href={`/appointments/book?patientId=${patient.id}`}>
-                  Book Appointment
+                <Link
+                  href={withLocalePath(
+                    locale,
+                    `/appointments/book?patientId=${patient.id}`
+                  )}
+                >
+                  {messages.patientsList.bookAppointment}
                 </Link>
               </Button>
               <Button asChild variant="outline" size="sm">
-                <Link href={`/patients/${patient.id}`}>View Details</Link>
+                <Link href={withLocalePath(locale, `/patients/${patient.id}`)}>
+                  {messages.patientsList.viewDetails}
+                </Link>
               </Button>
               <Button asChild variant="outline" size="sm">
-                <Link href={`/patients/${patient.id}/appointments`}>
-                  View Appointments
+                <Link
+                  href={withLocalePath(locale, `/patients/${patient.id}/appointments`)}
+                >
+                  {messages.patientsList.viewAppointments}
                 </Link>
               </Button>
             </div>

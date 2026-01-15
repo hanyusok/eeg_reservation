@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Calendar, Clock, RefreshCw, AlertCircle } from "lucide-react"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
+import { useMessages } from "@/lib/i18n-client"
 
 interface Appointment {
   id: string
@@ -27,6 +30,9 @@ interface PatientAppointmentsListProps {
 export default function PatientAppointmentsList({
   patientId,
 }: PatientAppointmentsListProps) {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const { messages } = useMessages()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -42,12 +48,12 @@ export default function PatientAppointmentsList({
       const response = await fetch(`/api/patients/${patientId}/appointments`)
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error("Patient not found")
+          throw new Error(messages.patientAppointments.errors.patientNotFound)
         }
         if (response.status === 403) {
-          throw new Error("You don't have permission to view these appointments")
+          throw new Error(messages.patientAppointments.errors.forbidden)
         }
-        throw new Error("Failed to fetch appointments")
+        throw new Error(messages.patientAppointments.errors.fetchFailed)
       }
       const data = await response.json()
       setAppointments(data.appointments || [])
@@ -95,7 +101,9 @@ export default function PatientAppointmentsList({
     return (
       <div className="flex items-center justify-center py-12">
         <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
-        <span className="ml-2 text-muted-foreground">Loading appointments...</span>
+        <span className="ml-2 text-muted-foreground">
+          {messages.patientAppointments.loading}
+        </span>
       </div>
     )
   }
@@ -105,12 +113,12 @@ export default function PatientAppointmentsList({
       <div className="rounded-lg border border-destructive bg-destructive/10 p-6">
         <div className="flex items-center gap-2 text-destructive mb-4">
           <AlertCircle className="h-5 w-5" />
-          <h3 className="font-semibold">Error</h3>
+          <h3 className="font-semibold">{messages.common.errorTitle}</h3>
         </div>
         <p className="text-sm mb-4">{error}</p>
         <Button onClick={fetchAppointments} variant="outline">
           <RefreshCw className="h-4 w-4 mr-2" />
-          Retry
+          {messages.common.retry}
         </Button>
       </div>
     )
@@ -119,10 +127,14 @@ export default function PatientAppointmentsList({
   if (appointments.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">No appointments found for this patient.</p>
+        <p className="text-muted-foreground mb-4">
+          {messages.patientAppointments.empty}
+        </p>
         <Button asChild>
-          <Link href={`/appointments/book?patientId=${patientId}`}>
-            Book Appointment
+          <Link
+            href={withLocalePath(locale, `/appointments/book?patientId=${patientId}`)}
+          >
+            {messages.patientAppointments.book}
           </Link>
         </Button>
       </div>
@@ -157,12 +169,16 @@ export default function PatientAppointmentsList({
               </div>
               <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
-                <p>Duration: {appointment.durationMinutes} minutes</p>
+                <p>
+                  {messages.patientAppointments.durationLabel}{" "}
+                  {appointment.durationMinutes} {messages.patientAppointments.minutes}
+                </p>
               </div>
               {appointment.parent && (
                 <div className="mt-2 text-sm text-muted-foreground">
                   <p>
-                    Parent: {appointment.parent.firstName} {appointment.parent.lastName}
+                    {messages.patientAppointments.parentLabel}{" "}
+                    {appointment.parent.firstName} {appointment.parent.lastName}
                   </p>
                 </div>
               )}
@@ -174,7 +190,9 @@ export default function PatientAppointmentsList({
             </div>
             <div className="flex gap-2">
               <Button asChild variant="outline" size="sm">
-                <Link href={`/appointments/${appointment.id}`}>View Details</Link>
+                <Link href={withLocalePath(locale, `/appointments/${appointment.id}`)}>
+                  {messages.patientAppointments.viewDetails}
+                </Link>
               </Button>
             </div>
           </div>

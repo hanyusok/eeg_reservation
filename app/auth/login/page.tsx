@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -9,18 +9,23 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Chrome, MessageCircle } from "lucide-react"
+import { useMessages } from "@/lib/i18n-client"
 
-const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-})
+const createLoginSchema = (messages: any) =>
+  z.object({
+    email: z.string().email(messages.auth.login.errors.invalidEmail),
+    password: z.string().min(6, messages.auth.login.errors.passwordMin),
+  })
 
-type LoginForm = z.infer<typeof loginSchema>
+type LoginForm = z.infer<ReturnType<typeof createLoginSchema>>
 
 export default function LoginPage() {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const { messages } = useMessages()
+
+  const loginSchema = useMemo(() => createLoginSchema(messages), [messages])
 
   const {
     register,
@@ -42,7 +47,7 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError("Invalid email or password")
+        setError(messages.auth.login.errors.invalidCredentials)
         setIsLoading(false)
         return
       }
@@ -51,7 +56,7 @@ export default function LoginPage() {
       router.push("/dashboard")
       router.refresh()
     } catch (err) {
-      setError("An error occurred. Please try again.")
+      setError(messages.auth.login.errors.generic)
       setIsLoading(false)
     }
   }
@@ -65,8 +70,10 @@ export default function LoginPage() {
         callbackUrl: "/dashboard",
         redirect: true,
       })
-    } catch (err) {
-      setError(`Failed to sign in with ${provider}. Please try again.`)
+      } catch (err) {
+        setError(
+          messages.auth.login.errors.oauthFailed.replace("{{provider}}", provider)
+        )
       setIsLoading(false)
     }
   }
@@ -75,11 +82,13 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8 shadow-lg">
         <div>
-          <h2 className="text-2xl font-bold text-center">Sign in to your account</h2>
+          <h2 className="text-2xl font-bold text-center">
+            {messages.auth.login.title}
+          </h2>
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            Or{" "}
+            {messages.auth.login.subtitle}{" "}
             <Link href="/auth/register" className="text-primary hover:underline">
-              create a new account
+              {messages.auth.login.createAccount}
             </Link>
           </p>
         </div>
@@ -94,7 +103,7 @@ export default function LoginPage() {
             disabled={isLoading}
           >
             <Chrome className="mr-2 h-4 w-4" />
-            Continue with Google
+            {messages.auth.login.continueWithGoogle}
           </Button>
 
           <Button
@@ -105,7 +114,7 @@ export default function LoginPage() {
             disabled={isLoading}
           >
             <MessageCircle className="mr-2 h-4 w-4" />
-            Continue with Kakao
+            {messages.auth.login.continueWithKakao}
           </Button>
         </div>
 
@@ -114,7 +123,9 @@ export default function LoginPage() {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+            <span className="bg-card px-2 text-muted-foreground">
+              {messages.auth.login.orContinueWith}
+            </span>
           </div>
         </div>
 
@@ -127,14 +138,14 @@ export default function LoginPage() {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium">
-              Email address
+              {messages.auth.login.emailLabel}
             </label>
             <input
               {...register("email")}
               type="email"
               id="email"
               className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              placeholder="you@example.com"
+              placeholder={messages.auth.login.emailPlaceholder}
             />
             {errors.email && (
               <p className="mt-1 text-sm text-destructive">{errors.email.message}</p>
@@ -143,14 +154,14 @@ export default function LoginPage() {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium">
-              Password
+              {messages.auth.login.passwordLabel}
             </label>
             <input
               {...register("password")}
               type="password"
               id="password"
               className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              placeholder="••••••••"
+              placeholder={messages.auth.login.passwordPlaceholder}
             />
             {errors.password && (
               <p className="mt-1 text-sm text-destructive">{errors.password.message}</p>
@@ -158,7 +169,7 @@ export default function LoginPage() {
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? messages.auth.login.signingIn : messages.auth.login.signIn}
           </Button>
         </form>
       </div>

@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
+import { useMessages } from "@/lib/i18n-client"
 
 interface Patient {
   id: string
@@ -25,6 +28,9 @@ interface Patient {
 }
 
 export default function AdminPatientsList() {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const { messages } = useMessages()
   const [patients, setPatients] = useState<Patient[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -39,7 +45,7 @@ export default function AdminPatientsList() {
       setLoading(true)
       const response = await fetch("/api/patients")
       if (!response.ok) {
-        throw new Error("Failed to fetch patients")
+        throw new Error(messages.adminPatientsList.errors.fetchFailed)
       }
       const data = await response.json()
       setPatients(data.patients || [])
@@ -81,15 +87,17 @@ export default function AdminPatientsList() {
   })
 
   if (loading) {
-    return <div className="text-center py-8">Loading patients...</div>
+    return (
+      <div className="text-center py-8">{messages.adminPatientsList.loading}</div>
+    )
   }
 
   if (error) {
     return (
       <div className="text-center py-8 text-destructive">
-        Error: {error}
+        {messages.common.errorPrefix} {error}
         <Button onClick={fetchPatients} className="ml-4" variant="outline">
-          Retry
+          {messages.common.retry}
         </Button>
       </div>
     )
@@ -101,7 +109,7 @@ export default function AdminPatientsList() {
       <div className="flex gap-4">
         <Input
           type="text"
-          placeholder="Search patients by name, email, or MRN..."
+          placeholder={messages.adminPatientsList.searchPlaceholder}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-md"
@@ -115,25 +123,25 @@ export default function AdminPatientsList() {
             <thead>
               <tr className="border-b">
                 <th className="px-4 py-3 text-left text-sm font-semibold">
-                  Patient Name
+                  {messages.adminPatientsList.columns.name}
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">
-                  Age
+                  {messages.adminPatientsList.columns.age}
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">
-                  Email
+                  {messages.adminPatientsList.columns.email}
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">
-                  MRN
+                  {messages.adminPatientsList.columns.mrn}
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">
-                  Parent
+                  {messages.adminPatientsList.columns.parent}
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">
-                  Appointments
+                  {messages.adminPatientsList.columns.appointments}
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-semibold">
-                  Actions
+                  {messages.adminPatientsList.columns.actions}
                 </th>
               </tr>
             </thead>
@@ -141,7 +149,9 @@ export default function AdminPatientsList() {
               {filteredPatients.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
-                    {searchTerm ? "No patients found matching your search" : "No patients found"}
+                    {searchTerm
+                      ? messages.adminPatientsList.emptySearch
+                      : messages.adminPatientsList.empty}
                   </td>
                 </tr>
               ) : (
@@ -150,7 +160,9 @@ export default function AdminPatientsList() {
                     <td className="px-4 py-3">
                       {patient.user.firstName} {patient.user.lastName}
                     </td>
-                    <td className="px-4 py-3">{calculateAge(patient.dateOfBirth)} years</td>
+                    <td className="px-4 py-3">
+                      {calculateAge(patient.dateOfBirth)} {messages.adminPatientsList.years}
+                    </td>
                     <td className="px-4 py-3">{patient.user.email}</td>
                     <td className="px-4 py-3">
                       {patient.medicalRecordNumber || "-"}
@@ -164,10 +176,16 @@ export default function AdminPatientsList() {
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
                         <Button asChild variant="ghost" size="sm">
-                          <Link href={`/admin/patients/${patient.id}`}>View</Link>
+                          <Link href={withLocalePath(locale, `/admin/patients/${patient.id}`)}>
+                            {messages.adminPatientsList.actions.view}
+                          </Link>
                         </Button>
                         <Button asChild variant="ghost" size="sm">
-                          <Link href={`/admin/patients/${patient.id}/edit`}>Edit</Link>
+                          <Link
+                            href={withLocalePath(locale, `/admin/patients/${patient.id}/edit`)}
+                          >
+                            {messages.common.edit}
+                          </Link>
                         </Button>
                       </div>
                     </td>
@@ -180,7 +198,9 @@ export default function AdminPatientsList() {
       </div>
 
       <div className="text-sm text-muted-foreground">
-        Showing {filteredPatients.length} of {patients.length} patients
+        {messages.adminPatientsList.showing
+          .replace("{{filtered}}", String(filteredPatients.length))
+          .replace("{{total}}", String(patients.length))}
       </div>
     </div>
   )

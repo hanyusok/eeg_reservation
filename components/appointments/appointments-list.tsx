@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { User } from "lucide-react"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
+import { useMessages } from "@/lib/i18n-client"
 
 interface Appointment {
   id: string
@@ -21,6 +24,9 @@ interface Appointment {
 }
 
 export default function AppointmentsList() {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const { messages } = useMessages()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -34,7 +40,7 @@ export default function AppointmentsList() {
       setLoading(true)
       const response = await fetch("/api/appointments")
       if (!response.ok) {
-        throw new Error("Failed to fetch appointments")
+        throw new Error(messages.appointmentsList.errors.fetchFailed)
       }
       const data = await response.json()
       setAppointments(data.appointments || [])
@@ -79,26 +85,33 @@ export default function AppointmentsList() {
   }
 
   if (loading) {
-    return <div className="text-center py-8">Loading appointments...</div>
+    return (
+      <div className="text-center py-8">
+        {messages.appointmentsList.loading}
+      </div>
+    )
   }
 
   if (error) {
     return (
       <div className="text-center py-8 text-destructive">
-        Error: {error}
+        {messages.common.errorPrefix} {error}
         <Button onClick={fetchAppointments} className="ml-4" variant="outline">
-          Retry
+          {messages.common.retry}
         </Button>
       </div>
     )
   }
 
   if (appointments.length === 0) {
+    const bookHref = withLocalePath(locale, "/appointments/book")
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground mb-4">No appointments found.</p>
+        <p className="text-muted-foreground mb-4">
+          {messages.appointmentsList.empty}
+        </p>
         <Button asChild>
-          <Link href="/appointments/book">Book Your First Appointment</Link>
+          <Link href={bookHref}>{messages.appointmentsList.cta}</Link>
         </Button>
       </div>
     )
@@ -137,7 +150,8 @@ export default function AppointmentsList() {
                 {formatDate(appointment.scheduledAt)}
               </p>
               <p className="text-sm text-muted-foreground">
-                Duration: {appointment.durationMinutes} minutes
+                {messages.appointmentsList.durationLabel} {appointment.durationMinutes}{" "}
+                {messages.appointmentsList.minutes}
               </p>
               {appointment.notes && (
                 <p className="mt-2 text-sm">{appointment.notes}</p>
@@ -145,7 +159,9 @@ export default function AppointmentsList() {
             </div>
             <div className="flex gap-2">
               <Button asChild variant="outline" size="sm">
-                <Link href={`/appointments/${appointment.id}`}>View Details</Link>
+                <Link href={withLocalePath(locale, `/appointments/${appointment.id}`)}>
+                  {messages.appointmentsList.viewDetails}
+                </Link>
               </Button>
             </div>
           </div>

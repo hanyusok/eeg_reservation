@@ -4,6 +4,7 @@ import PatientAppointmentsList from "@/components/patients/patient-appointments-
 import { BackButton } from "@/components/ui/back-button"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { getMessages } from "@/lib/i18n"
 
 export default async function PatientAppointmentsPage({
   params,
@@ -11,6 +12,7 @@ export default async function PatientAppointmentsPage({
   params: { id: string }
 }) {
   const session = await auth()
+  const messages = getMessages("en")
 
   if (!session) {
     redirect("/auth/login")
@@ -24,14 +26,14 @@ export default async function PatientAppointmentsPage({
         </div>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Patient Appointments</h1>
+            <h1 className="text-3xl font-bold">{messages.patientsAppointments.title}</h1>
             <p className="text-muted-foreground">
-              View all appointments for this patient
+              {messages.patientsAppointments.subtitle}
             </p>
           </div>
           <Button asChild>
             <Link href={`/appointments/book?patientId=${params.id}`}>
-              Book New Appointment
+              {messages.patientsAppointments.cta}
             </Link>
           </Button>
         </div>

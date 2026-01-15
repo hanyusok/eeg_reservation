@@ -3,8 +3,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { User, Mail, Shield, LogOut, Settings } from "lucide-react"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
+import { useMessages } from "@/lib/i18n-client"
 
 interface UserProfileProps {
   session: {
@@ -18,6 +21,9 @@ interface UserProfileProps {
 }
 
 export function UserProfile({ session }: UserProfileProps) {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const { messages } = useMessages()
   const getInitials = (name?: string | null, email?: string) => {
     if (name) {
       const parts = name.split(" ")
@@ -50,13 +56,13 @@ export function UserProfile({ session }: UserProfileProps) {
   const getRoleLabel = (role: string) => {
     switch (role) {
       case "admin":
-        return "Administrator"
+        return messages.roles.admin
       case "doctor":
-        return "Doctor"
+        return messages.roles.doctor
       case "parent":
-        return "Parent"
+        return messages.roles.parent
       case "patient":
-        return "Patient"
+        return messages.roles.patient
       default:
         return role
     }
@@ -100,7 +106,9 @@ export function UserProfile({ session }: UserProfileProps) {
             </div>
             <div className="flex items-center gap-2">
               <User className="h-4 w-4" />
-              <span>ID: {session.user.id.substring(0, 8)}...</span>
+              <span>
+                {messages.userProfile.idLabel} {session.user.id.substring(0, 8)}...
+              </span>
             </div>
           </div>
         </div>
@@ -108,9 +116,9 @@ export function UserProfile({ session }: UserProfileProps) {
         {/* Actions Section */}
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button asChild variant="outline" size="sm">
-            <Link href="/profile">
+            <Link href={withLocalePath(locale, "/profile")}>
               <Settings className="h-4 w-4 mr-2" />
-              Edit Profile
+              {messages.userProfile.editProfile}
             </Link>
           </Button>
           <Button
@@ -119,7 +127,7 @@ export function UserProfile({ session }: UserProfileProps) {
             onClick={() => signOut({ callbackUrl: "/auth/login" })}
           >
             <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
+            {messages.userProfile.signOut}
           </Button>
         </div>
       </div>

@@ -3,9 +3,11 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { ProfileForm } from "@/components/profile/profile-form"
 import { BackButton } from "@/components/ui/back-button"
+import { getMessages } from "@/lib/i18n"
 
 export default async function ProfilePage() {
   const session = await auth()
+  const messages = getMessages("en")
 
   if (!session) {
     redirect("/auth/login")
@@ -36,9 +38,9 @@ export default async function ProfilePage() {
         <div className="flex items-center gap-4 mb-4">
           <BackButton href="/dashboard" />
         </div>
-        <h1 className="text-3xl font-bold">Edit Profile</h1>
+        <h1 className="text-3xl font-bold">{messages.profile.title}</h1>
         <p className="text-muted-foreground mt-2">
-          Update your account information and preferences
+          {messages.profile.subtitle}
         </p>
       </div>
 

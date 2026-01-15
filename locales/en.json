@@ -1,0 +1,686 @@
+{
+  "home": {
+    "title": "EEG Reservation System",
+    "subtitle": "Online reservation system for pediatric epilepsy EEG monitoring",
+    "ctaLogin": "Go to Login",
+    "ctaDashboard": "Go to Dashboard"
+  },
+  "common": {
+    "back": "Back",
+    "loading": "Loading...",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "errorPrefix": "Error:",
+    "errorTitle": "Error"
+  },
+  "nav": {
+    "brand": "EEG Reservation",
+    "brandShort": "EEG",
+    "dashboard": "Dashboard",
+    "appointments": "Appointments",
+    "patients": "Patients",
+    "information": "Information",
+    "admin": "Admin",
+    "profile": "Profile",
+    "signOut": "Sign Out"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "doctor": "Doctor",
+    "parent": "Parent",
+    "patient": "Patient"
+  },
+  "userProfile": {
+    "idLabel": "ID:",
+    "editProfile": "Edit Profile",
+    "signOut": "Sign Out"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in to your account",
+      "subtitle": "Or",
+      "createAccount": "create a new account",
+      "continueWithGoogle": "Continue with Google",
+      "continueWithKakao": "Continue with Kakao",
+      "orContinueWith": "Or continue with",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "signIn": "Sign in",
+      "signingIn": "Signing in...",
+      "errors": {
+        "invalidEmail": "Invalid email address",
+        "passwordMin": "Password must be at least 6 characters",
+        "invalidCredentials": "Invalid email or password",
+        "generic": "An error occurred. Please try again.",
+        "oauthFailed": "Failed to sign in with {{provider}}. Please try again."
+      }
+    },
+    "register": {
+      "title": "Create an account",
+      "subtitle": "Or",
+      "signIn": "sign in to your existing account",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "phoneLabel": "Phone (optional)",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "roleLabel": "Account type",
+      "roleParent": "Parent/Guardian",
+      "rolePatient": "Patient",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "••••••••",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "••••••••",
+      "createAccount": "Create account",
+      "creatingAccount": "Creating account...",
+      "errors": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "invalidEmail": "Invalid email address",
+        "passwordMin": "Password must be at least 6 characters",
+        "passwordMismatch": "Passwords don't match",
+        "registrationFailed": "Registration failed",
+        "generic": "An error occurred. Please try again."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcomePrefix": "Welcome back,",
+    "roleLabel": "Role",
+    "appointments": {
+      "title": "Appointments",
+      "description": "View and manage your appointments",
+      "view": "View Appointments",
+      "book": "Book New"
+    },
+    "patients": {
+      "title": "Patients",
+      "description": "Manage patient profiles",
+      "view": "View Patients",
+      "add": "Add Patient"
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "Manage your account information",
+      "edit": "Edit Profile"
+    }
+  },
+  "appointments": {
+    "title": "Appointments",
+    "subtitle": "View and manage your appointments",
+    "cta": "Book New Appointment"
+  },
+  "appointmentsBook": {
+    "title": "Book Appointment",
+    "subtitle": "Schedule a new EEG monitoring appointment"
+  },
+  "patients": {
+    "title": "Patients",
+    "subtitle": "Manage patient profiles",
+    "cta": "Add New Patient"
+  },
+  "patientsNew": {
+    "title": "Add New Patient",
+    "subtitle": "Create a new patient profile"
+  },
+  "patientsDetail": {
+    "title": "Patient Details",
+    "subtitle": "View and manage patient information"
+  },
+  "patientsAppointments": {
+    "title": "Patient Appointments",
+    "subtitle": "View all appointments for this patient",
+    "cta": "Book New Appointment"
+  },
+  "profile": {
+    "title": "Edit Profile",
+    "subtitle": "Update your account information and preferences"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "subtitle": "Manage system data and appointments",
+    "appointmentsTitle": "Appointment Management",
+    "appointmentsSubtitle": "View and manage all appointments",
+    "appointmentsCta": "Create Appointment",
+    "patientsTitle": "Patient Management",
+    "patientsSubtitle": "View and manage all patients",
+    "patientsCta": "Add Patient",
+    "settingsTitle": "Settings",
+    "settingsSubtitle": "Configure system settings"
+  },
+  "information": {
+    "title": "EEG Center Information",
+    "subtitle": "Check location, hours, staff, and preparation guidance"
+  },
+  "informationCenter": {
+    "location": {
+      "title": "Location",
+      "addressLabel": "Address",
+      "addressLines": [
+        "123 Teheran-ro, Gangnam-gu, Seoul",
+        "EEG Monitoring Center, 3F"
+      ],
+      "phoneLabel": "Phone",
+      "phoneValue": "02-1234-5678",
+      "emailLabel": "Email",
+      "emailValue": "eeg-center@hospital.com",
+      "transitLabel": "Public Transit:",
+      "transitText": "5-minute walk from Exit 3, Gangnam Station (Line 2)",
+      "parkingLabel": "Parking:",
+      "parkingText": "Underground parking available (free during exam)"
+    },
+    "hours": {
+      "title": "Operating Hours",
+      "schedule": [
+        { "label": "Monday - Friday", "time": "09:00 - 18:00" },
+        { "label": "Saturday", "time": "09:00 - 13:00" },
+        { "label": "Sunday & Holidays", "time": "Closed" }
+      ],
+      "emergencyTitle": "Emergency Appointments:",
+      "emergencyText": "Contact us 24/7 for urgent cases",
+      "emergencyHotline": "Emergency Hotline: 02-1234-5678 (24/7)"
+    },
+    "staff": {
+      "title": "Our Staff",
+      "members": [
+        {
+          "name": "Dr. Kim Neuroscience",
+          "role": "Chief Neurologist",
+          "bio": "Pediatric neurologist with 20+ years of experience"
+        },
+        {
+          "name": "Dr. Lee EEG",
+          "role": "EEG Specialist",
+          "bio": "EEG specialist focused on pediatric epilepsy diagnosis"
+        },
+        {
+          "name": "Park Technologist",
+          "role": "EEG Technologist",
+          "bio": "EEG technologist with 10+ years of experience"
+        },
+        {
+          "name": "Choi Nurse",
+          "role": "Registered Nurse",
+          "bio": "Pediatric nursing specialist focused on patient care"
+        }
+      ]
+    },
+    "preparation": {
+      "title": "EEG Preparation",
+      "before": {
+        "title": "Before the exam",
+        "items": [
+          {
+            "title": "Wash hair:",
+            "text": "Wash hair the night before and avoid hair products (spray, gel, wax)."
+          },
+          {
+            "title": "Sleep reduction:",
+            "text": "Sleep 2–3 hours less than usual the night before (follow doctor instructions)."
+          },
+          {
+            "title": "Medication:",
+            "text": "Discuss ongoing medications with your doctor. If stopping is required, they will guide you."
+          },
+          {
+            "title": "Meals:",
+            "text": "You may eat normally on the exam day. Avoid caffeine 4 hours before the test."
+          }
+        ]
+      },
+      "dayOf": {
+        "title": "On the exam day",
+        "items": [
+          {
+            "title": "Clothing:",
+            "text": "Wear comfortable clothes. Button-up or zip-up tops are recommended."
+          },
+          {
+            "title": "Belongings:",
+            "text": "Bring only essential items as movement may be restricted."
+          },
+          {
+            "title": "Guardian:",
+            "text": "A guardian must accompany pediatric patients."
+          },
+          {
+            "title": "Arrival time:",
+            "text": "Arrive 15 minutes early to allow for preparation."
+          }
+        ]
+      },
+      "during": {
+        "title": "During the exam",
+        "items": [
+          "Try to remain still during the exam.",
+          "Flashing lights or specific stimuli may be included.",
+          "The exam typically takes 1–2 hours.",
+          "Electrode marks may remain but usually fade within a day."
+        ]
+      },
+      "notice": {
+        "title": "⚠️ Important Notice",
+        "body": "If you have a fever or cold symptoms before the exam, please contact us. Rescheduling may be necessary."
+      }
+    }
+  },
+  "bookingForm": {
+    "loadingPatients": "Loading patients...",
+    "noPatients": "No patients found. Please create a patient profile first.",
+    "createPatient": "Create Patient Profile",
+    "patientLabel": "Select Patient *",
+    "patientPlaceholder": "-- Select a patient --",
+    "typeLabel": "Appointment Type *",
+    "dateTimeLabel": "Date & Time *",
+    "durationLabel": "Duration (minutes) *",
+    "notesLabel": "Notes (optional)",
+    "notesPlaceholder": "Any additional information about this appointment...",
+    "submit": "Book Appointment",
+    "booking": "Booking...",
+    "types": {
+      "initialConsultation": "Initial Consultation",
+      "eegMonitoring": "EEG Monitoring",
+      "followUp": "Follow-up"
+    },
+    "errors": {
+      "selectPatient": "Please select a patient",
+      "selectDateTime": "Please select a date and time",
+      "fetchPatientsFailed": "Failed to fetch patients",
+      "createFailed": "Failed to create appointment"
+    }
+  },
+  "appointmentsList": {
+    "loading": "Loading appointments...",
+    "empty": "No appointments found.",
+    "cta": "Book Your First Appointment",
+    "viewDetails": "View Details",
+    "durationLabel": "Duration:",
+    "minutes": "minutes",
+    "errors": {
+      "fetchFailed": "Failed to fetch appointments"
+    }
+  },
+  "appointmentDetail": {
+    "loading": "Loading appointment details...",
+    "errorTitle": "Error Loading Appointment",
+    "notFound": "Appointment not found.",
+    "backToList": "Back to Appointments",
+    "cancelling": "Cancelling...",
+    "confirmCancel": "Are you sure you want to cancel this appointment? This action cannot be undone.",
+    "minutes": "minutes",
+    "notesPlaceholder": "Add notes about this appointment...",
+    "noNotes": "No notes available for this appointment.",
+    "sections": {
+      "details": "Appointment Details",
+      "patient": "Patient Information",
+      "parent": "Parent/Guardian",
+      "notes": "Notes",
+      "documents": "Related Documents"
+    },
+    "labels": {
+      "scheduledAt": "Scheduled Date & Time",
+      "duration": "Duration",
+      "patientName": "Patient Name",
+      "email": "Email",
+      "name": "Name"
+    },
+    "errors": {
+      "notFound": "Appointment not found",
+      "forbidden": "You don't have permission to view this appointment",
+      "fetchFailed": "Failed to fetch appointment",
+      "updateFailed": "Failed to update appointment",
+      "cancelFailed": "Failed to cancel appointment"
+    },
+    "success": {
+      "updated": "Appointment updated successfully!",
+      "cancelled": "Appointment cancelled successfully!"
+    }
+  },
+  "patientsList": {
+    "loading": "Loading patients...",
+    "empty": "No patients found.",
+    "cta": "Add Your First Patient",
+    "ageLabel": "Age:",
+    "yearsOld": "years old",
+    "dobLabel": "Date of Birth:",
+    "mrnLabel": "MRN:",
+    "parentLabel": "Parent:",
+    "appointmentsLabel": "Appointments:",
+    "bookAppointment": "Book Appointment",
+    "viewDetails": "View Details",
+    "viewAppointments": "View Appointments",
+    "errors": {
+      "fetchFailed": "Failed to fetch patients"
+    }
+  },
+  "patientAppointments": {
+    "loading": "Loading appointments...",
+    "empty": "No appointments found for this patient.",
+    "book": "Book Appointment",
+    "viewDetails": "View Details",
+    "durationLabel": "Duration:",
+    "minutes": "minutes",
+    "parentLabel": "Parent:",
+    "errors": {
+      "patientNotFound": "Patient not found",
+      "forbidden": "You don't have permission to view these appointments",
+      "fetchFailed": "Failed to fetch appointments"
+    }
+  },
+  "patientDetail": {
+    "loading": "Loading patient details...",
+    "yearsOld": "years old",
+    "bookAppointment": "Book Appointment",
+    "viewAll": "View All",
+    "noAppointments": "No appointments found.",
+    "noDocuments": "No documents found.",
+    "durationLabel": "Duration:",
+    "minutes": "minutes",
+    "sections": {
+      "parent": "Parent/Guardian",
+      "emergency": "Emergency Contact",
+      "medical": "Medical Information",
+      "recentAppointments": "Recent Appointments",
+      "recentDocuments": "Recent Documents"
+    },
+    "labels": {
+      "email": "Email",
+      "phone": "Phone",
+      "dateOfBirth": "Date of Birth",
+      "mrn": "Medical Record Number",
+      "name": "Name",
+      "medicalHistory": "Medical History",
+      "currentMedications": "Current Medications"
+    },
+    "errors": {
+      "notFound": "Patient not found",
+      "forbidden": "You don't have permission to view this patient",
+      "fetchFailed": "Failed to fetch patient"
+    }
+  },
+  "patientForm": {
+    "sections": {
+      "patientInfo": "Patient Information",
+      "medicalInfo": "Medical Information"
+    },
+    "labels": {
+      "firstName": "First Name *",
+      "lastName": "Last Name *",
+      "email": "Email *",
+      "phone": "Phone",
+      "parentEmail": "Parent/Guardian Email (Optional)",
+      "dateOfBirth": "Date of Birth *",
+      "medicalRecordNumber": "Medical Record Number",
+      "medicalHistory": "Medical History",
+      "currentMedications": "Current Medications",
+      "emergencyContactName": "Emergency Contact Name *",
+      "emergencyContactPhone": "Emergency Contact Phone *"
+    },
+    "placeholders": {
+      "phone": "+1 (555) 123-4567",
+      "parentEmail": "parent@example.com",
+      "medicalRecordNumber": "Optional",
+      "medicalHistory": "Previous medical conditions, surgeries, etc.",
+      "currentMedications": "List current medications and dosages",
+      "emergencyContactPhone": "+1 (555) 123-4567"
+    },
+    "actions": {
+      "saving": "Saving...",
+      "create": "Create Patient",
+      "update": "Update Patient"
+    },
+    "parentFound": "✓ Found:",
+    "searching": "Searching...",
+    "parentHint": "Enter the email of an existing parent/guardian account to link this patient",
+    "errors": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "invalidEmail": "Invalid email address",
+      "dobRequired": "Date of birth is required",
+      "emergencyNameRequired": "Emergency contact name is required",
+      "emergencyPhoneRequired": "Emergency contact phone is required",
+      "notParentAccount": "User found but is not a parent account",
+      "updateFailed": "Failed to update patient",
+      "createUserFailed": "Failed to create user account",
+      "createPatientFailed": "Failed to create patient profile"
+    }
+  },
+  "profileForm": {
+    "labels": {
+      "firstName": "First Name *",
+      "lastName": "Last Name *",
+      "email": "Email *",
+      "phone": "Phone"
+    },
+    "placeholders": {
+      "phone": "010-1234-5678"
+    },
+    "actions": {
+      "saving": "Saving...",
+      "saveChanges": "Save Changes"
+    },
+    "password": {
+      "title": "Change Password",
+      "subtitle": "Update your password to keep your account secure",
+      "openForm": "Change Password",
+      "currentPassword": "Current Password *",
+      "newPassword": "New Password *",
+      "confirmPassword": "Confirm New Password *",
+      "changing": "Changing...",
+      "change": "Change Password"
+    },
+    "account": {
+      "title": "Account Information",
+      "createdAt": "Account Created:",
+      "updatedAt": "Last Updated:",
+      "userId": "User ID:"
+    },
+    "success": {
+      "profileUpdated": "Profile updated successfully!",
+      "passwordChanged": "Password changed successfully!"
+    },
+    "errors": {
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "invalidEmail": "Invalid email address",
+      "currentPasswordRequired": "Current password is required",
+      "newPasswordMin": "Password must be at least 6 characters",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordMismatch": "Passwords don't match",
+      "updateFailed": "Failed to update profile",
+      "updateGeneric": "An error occurred while updating your profile",
+      "changePasswordFailed": "Failed to change password",
+      "changePasswordGeneric": "An error occurred while changing your password"
+    }
+  },
+  "adminDashboard": {
+    "loading": "Loading dashboard...",
+    "viewAll": "View all →",
+    "stats": {
+      "totalPatients": "Total Patients",
+      "totalAppointments": "Total Appointments",
+      "todayAppointments": "Today's Appointments",
+      "upcoming": "Upcoming"
+    },
+    "actions": {
+      "title": "Appointment Actions",
+      "manageAll": "Manage All",
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "rescheduled": "Rescheduled",
+      "createAppointment": "Create Appointment",
+      "createAppointmentHint": "Schedule a new appointment",
+      "addPatient": "Add Patient",
+      "addPatientHint": "Create a new patient profile",
+      "settings": "Settings",
+      "settingsHint": "Configure system settings"
+    },
+    "today": {
+      "title": "Today's Appointments",
+      "viewAll": "View All",
+      "empty": "No appointments scheduled for today",
+      "view": "View"
+    }
+  },
+  "adminAppointmentsList": {
+    "loading": "Loading appointments...",
+    "searchPlaceholder": "Search by patient name or email...",
+    "empty": "No appointments found",
+    "manage": "Manage",
+    "minutes": "minutes",
+    "filters": {
+      "all": "All Status",
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "rescheduled": "Rescheduled"
+    },
+    "labels": {
+      "patient": "Patient:",
+      "parent": "Parent:",
+      "dateTime": "Date & Time:",
+      "duration": "Duration:",
+      "notes": "Notes:"
+    },
+    "showing": "Showing {{filtered}} of {{total}} appointments",
+    "errors": {
+      "fetchFailed": "Failed to fetch appointments"
+    }
+  },
+  "adminPatientsList": {
+    "loading": "Loading patients...",
+    "searchPlaceholder": "Search patients by name, email, or MRN...",
+    "empty": "No patients found",
+    "emptySearch": "No patients found matching your search",
+    "years": "years",
+    "columns": {
+      "name": "Patient Name",
+      "age": "Age",
+      "email": "Email",
+      "mrn": "MRN",
+      "parent": "Parent",
+      "appointments": "Appointments",
+      "actions": "Actions"
+    },
+    "actions": {
+      "view": "View"
+    },
+    "showing": "Showing {{filtered}} of {{total}} patients",
+    "errors": {
+      "fetchFailed": "Failed to fetch patients"
+    }
+  },
+  "adminAppointmentDetail": {
+    "title": "Appointment Details",
+    "loading": "Loading appointment...",
+    "notFound": "Appointment not found",
+    "backToList": "Back to List",
+    "confirmCancel": "Cancel this appointment? This cannot be undone.",
+    "minutes": "minutes",
+    "sections": {
+      "info": "Appointment Information",
+      "patient": "Patient Information"
+    },
+    "labels": {
+      "status": "Status",
+      "scheduledAt": "Date & Time",
+      "duration": "Duration",
+      "notes": "Notes",
+      "patientName": "Patient Name",
+      "email": "Email",
+      "parent": "Parent/Guardian"
+    },
+    "statuses": {
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "rescheduled": "Rescheduled"
+    },
+    "actions": {
+      "markCompleted": "Mark Completed",
+      "marking": "Marking...",
+      "cancel": "Cancel Appointment",
+      "cancelling": "Cancelling...",
+      "saveChanges": "Save Changes",
+      "viewPatient": "View Patient Profile"
+    },
+    "errors": {
+      "fetchFailed": "Failed to fetch appointment",
+      "updateFailed": "Failed to update appointment",
+      "completeFailed": "Failed to mark appointment as completed",
+      "cancelFailed": "Failed to cancel appointment"
+    }
+  },
+  "appointmentNotes": {
+    "title": "Appointment Notes",
+    "addLabel": "Add Note",
+    "placeholder": "Add a note about this appointment...",
+    "add": "Add Note",
+    "adding": "Adding...",
+    "empty": "No notes yet. Add a note above.",
+    "errors": {
+      "addFailed": "Failed to add note"
+    }
+  },
+  "documentList": {
+    "title": "Medical Documents",
+    "uploadToggle": "Upload Document",
+    "selectFile": "Select File",
+    "upload": "Upload",
+    "uploading": "Uploading...",
+    "loading": "Loading documents...",
+    "empty": "No documents uploaded yet.",
+    "download": "Download",
+    "uploadedBy": "Uploaded by {{name}} on {{date}}",
+    "errors": {
+      "uploadFailed": "Failed to upload document"
+    }
+  },
+  "settingsPanel": {
+    "saving": "Saving...",
+    "save": "Save Settings",
+    "noteTitle": "Note:",
+    "noteBody": "For security, sensitive configuration like API keys should be stored in environment variables, not in the database. This UI is for display purposes only.",
+    "messages": {
+      "saved": "Settings saved! (Note: In production, these would be stored securely)",
+      "failed": "Failed to save settings",
+      "failedPrefix": "Failed"
+    },
+    "zapier": {
+      "title": "Zapier Integration",
+      "webhookLabel": "Zapier Webhook URL",
+      "webhookPlaceholder": "https://hooks.zapier.com/hooks/catch/...",
+      "webhookHint": "Get this URL from your Zapier webhook trigger"
+    },
+    "email": {
+      "title": "Email Configuration",
+      "providerLabel": "Email Provider",
+      "providerHint": "Configure email provider in environment variables"
+    },
+    "sms": {
+      "title": "SMS Configuration",
+      "providerLabel": "SMS Provider",
+      "providerHint": "Configure SMS provider in environment variables"
+    },
+    "calendly": {
+      "title": "Calendly Integration",
+      "apiKeyLabel": "Calendly API Key",
+      "apiKeyPlaceholder": "Enter Calendly API key",
+      "apiKeyHint": "Configure in environment variables for security"
+    },
+    "providers": {
+      "console": "Console (Development)",
+      "resend": "Resend",
+      "sendgrid": "SendGrid",
+      "smtp": "SMTP",
+      "twilio": "Twilio"
+    }
+  }
+}

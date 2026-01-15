@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { BackButton } from "@/components/ui/back-button"
@@ -23,6 +23,8 @@ import {
   Save,
   X,
 } from "lucide-react"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
+import { useMessages } from "@/lib/i18n-client"
 
 interface Appointment {
   id: string
@@ -63,6 +65,9 @@ export default function AppointmentDetail({
   appointmentId: string
 }) {
   const router = useRouter()
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const { messages } = useMessages()
   const [appointment, setAppointment] = useState<Appointment | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -87,12 +92,12 @@ export default function AppointmentDetail({
       
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error("Appointment not found")
+          throw new Error(messages.appointmentDetail.errors.notFound)
         }
         if (response.status === 403) {
-          throw new Error("You don't have permission to view this appointment")
+          throw new Error(messages.appointmentDetail.errors.forbidden)
         }
-        throw new Error("Failed to fetch appointment")
+        throw new Error(messages.appointmentDetail.errors.fetchFailed)
       }
 
       const data = await response.json()
@@ -127,10 +132,10 @@ export default function AppointmentDetail({
 
       if (!response.ok) {
         const result = await response.json()
-        throw new Error(result.error || "Failed to update appointment")
+        throw new Error(result.error || messages.appointmentDetail.errors.updateFailed)
       }
 
-      setSuccess("Appointment updated successfully!")
+      setSuccess(messages.appointmentDetail.success.updated)
       setIsEditing(false)
       await fetchAppointment()
       setTimeout(() => setSuccess(null), 3000)
@@ -142,7 +147,7 @@ export default function AppointmentDetail({
   const handleCancel = async () => {
     if (
       !confirm(
-        "Are you sure you want to cancel this appointment? This action cannot be undone."
+        messages.appointmentDetail.confirmCancel
       )
     ) {
       return
@@ -158,14 +163,14 @@ export default function AppointmentDetail({
 
       if (!response.ok) {
         const result = await response.json()
-        throw new Error(result.error || "Failed to cancel appointment")
+        throw new Error(result.error || messages.appointmentDetail.errors.cancelFailed)
       }
 
-      setSuccess("Appointment cancelled successfully!")
+      setSuccess(messages.appointmentDetail.success.cancelled)
       await fetchAppointment()
       setTimeout(() => {
         setSuccess(null)
-        router.push("/appointments")
+        router.push(withLocalePath(locale, "/appointments"))
       }, 2000)
     } catch (err: any) {
       setError(err.message)
@@ -236,7 +241,9 @@ export default function AppointmentDetail({
       <div className="container mx-auto p-6 max-w-4xl">
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading appointment details...</p>
+          <p className="text-muted-foreground">
+            {messages.appointmentDetail.loading}
+          </p>
         </div>
       </div>
     )
@@ -245,19 +252,21 @@ export default function AppointmentDetail({
   if (error) {
     return (
       <div className="container mx-auto p-6 max-w-4xl">
-        <BackButton href="/appointments" />
+        <BackButton href={withLocalePath(locale, "/appointments")} />
         <div className="mt-6 rounded-lg border border-destructive bg-destructive/10 p-6 text-center">
           <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-destructive mb-2">
-            Error Loading Appointment
+            {messages.appointmentDetail.errorTitle}
           </h2>
           <p className="text-muted-foreground mb-4">{error}</p>
           <div className="flex gap-2 justify-center">
             <Button onClick={fetchAppointment} variant="outline">
-              Try Again
+              {messages.common.retry}
             </Button>
             <Button asChild variant="outline">
-              <Link href="/appointments">Back to Appointments</Link>
+              <Link href={withLocalePath(locale, "/appointments")}>
+                {messages.appointmentDetail.backToList}
+              </Link>
             </Button>
           </div>
         </div>
@@ -268,11 +277,15 @@ export default function AppointmentDetail({
   if (!appointment) {
     return (
       <div className="container mx-auto p-6 max-w-4xl">
-        <BackButton href="/appointments" />
+        <BackButton href={withLocalePath(locale, "/appointments")} />
         <div className="mt-6 text-center py-12">
-          <p className="text-muted-foreground mb-4">Appointment not found.</p>
+          <p className="text-muted-foreground mb-4">
+            {messages.appointmentDetail.notFound}
+          </p>
           <Button asChild>
-            <Link href="/appointments">Back to Appointments</Link>
+            <Link href={withLocalePath(locale, "/appointments")}>
+              {messages.appointmentDetail.backToList}
+            </Link>
           </Button>
         </div>
       </div>
@@ -282,7 +295,7 @@ export default function AppointmentDetail({
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="mb-6">
-        <BackButton href="/appointments" />
+        <BackButton href={withLocalePath(locale, "/appointments")} />
       </div>
 
       {/* Header */}
@@ -314,7 +327,7 @@ export default function AppointmentDetail({
                     size="sm"
                   >
                     <Edit className="h-4 w-4 mr-2" />
-                    Edit
+                    {messages.common.edit}
                   </Button>
                   <Button
                     onClick={handleCancel}
@@ -323,14 +336,16 @@ export default function AppointmentDetail({
                     disabled={isCancelling}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    {isCancelling ? "Cancelling..." : "Cancel"}
+                    {isCancelling
+                      ? messages.appointmentDetail.cancelling
+                      : messages.common.cancel}
                   </Button>
                 </>
               ) : (
                 <>
                   <Button onClick={handleUpdate} size="sm">
                     <Save className="h-4 w-4 mr-2" />
-                    Save
+                    {messages.common.save}
                   </Button>
                   <Button
                     onClick={() => {
@@ -341,7 +356,7 @@ export default function AppointmentDetail({
                     size="sm"
                   >
                     <X className="h-4 w-4 mr-2" />
-                    Cancel
+                    {messages.common.cancel}
                   </Button>
                 </>
               )}
@@ -367,12 +382,12 @@ export default function AppointmentDetail({
         <div className="rounded-lg border bg-card p-6 shadow-sm">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Appointment Details
+            {messages.appointmentDetail.sections.details}
           </h2>
           <div className="space-y-4">
             <div>
               <Label htmlFor="scheduledAt" className="text-sm font-medium text-muted-foreground mb-1">
-                Scheduled Date & Time
+                {messages.appointmentDetail.labels.scheduledAt}
               </Label>
               {isEditing ? (
                 <Input
@@ -394,10 +409,10 @@ export default function AppointmentDetail({
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2">
                 <Clock className="h-4 w-4" />
-                Duration
+                {messages.appointmentDetail.labels.duration}
               </p>
               <p className="text-lg">
-                {appointment.durationMinutes} minutes
+                {appointment.durationMinutes} {messages.appointmentDetail.minutes}
                 {appointment.scheduledAt && (
                   <span className="text-muted-foreground ml-2">
                     ({new Date(appointment.scheduledAt).toLocaleTimeString("en-US", {
@@ -425,12 +440,12 @@ export default function AppointmentDetail({
         <div className="rounded-lg border bg-card p-6 shadow-sm">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <User className="h-5 w-5" />
-            Patient Information
+            {messages.appointmentDetail.sections.patient}
           </h2>
           <div className="space-y-3">
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">
-                Patient Name
+                {messages.appointmentDetail.labels.patientName}
               </p>
               <p className="text-lg font-semibold">
                 {appointment.patient.user.firstName}{" "}
@@ -441,7 +456,7 @@ export default function AppointmentDetail({
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                Email
+                {messages.appointmentDetail.labels.email}
               </p>
               <p className="text-sm">{appointment.patient.user.email}</p>
             </div>
@@ -453,12 +468,12 @@ export default function AppointmentDetail({
           <div className="rounded-lg border bg-card p-6 shadow-sm">
             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
               <User className="h-5 w-5" />
-              Parent/Guardian
+              {messages.appointmentDetail.sections.parent}
             </h2>
             <div className="space-y-3">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">
-                  Name
+                  {messages.appointmentDetail.labels.name}
                 </p>
                 <p className="text-lg font-semibold">
                   {appointment.parent.firstName} {appointment.parent.lastName}
@@ -468,7 +483,7 @@ export default function AppointmentDetail({
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  Email
+                  {messages.appointmentDetail.labels.email}
                 </p>
                 <p className="text-sm">{appointment.parent.email}</p>
               </div>
@@ -480,7 +495,7 @@ export default function AppointmentDetail({
         <div className="rounded-lg border bg-card p-6 shadow-sm">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Notes
+            {messages.appointmentDetail.sections.notes}
           </h2>
           {isEditing ? (
             <div>
@@ -495,14 +510,14 @@ export default function AppointmentDetail({
                 }
                 rows={6}
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                placeholder="Add notes about this appointment..."
+                placeholder={messages.appointmentDetail.notesPlaceholder}
               />
             </div>
           ) : appointment.notes ? (
             <p className="text-sm whitespace-pre-wrap">{appointment.notes}</p>
           ) : (
             <p className="text-sm text-muted-foreground italic">
-              No notes available for this appointment.
+              {messages.appointmentDetail.noNotes}
             </p>
           )}
         </div>
@@ -513,7 +528,7 @@ export default function AppointmentDetail({
         <div className="mt-6 rounded-lg border bg-card p-6 shadow-sm">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Related Documents
+            {messages.appointmentDetail.sections.documents}
           </h2>
           <div className="space-y-2">
             {appointment.documents.map((doc) => (
@@ -540,7 +555,9 @@ export default function AppointmentDetail({
       {/* Actions */}
       <div className="mt-6 flex gap-3">
         <Button asChild variant="outline">
-          <Link href="/appointments">Back to Appointments</Link>
+          <Link href={withLocalePath(locale, "/appointments")}>
+            {messages.appointmentDetail.backToList}
+          </Link>
         </Button>
       </div>
     </div>

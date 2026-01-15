@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,6 +18,8 @@ import {
   UserCircle,
   FileCheck,
 } from "lucide-react"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
+import { useMessages } from "@/lib/i18n-client"
 
 interface PatientDetail {
   id: string
@@ -63,6 +65,9 @@ interface PatientDetailProps {
 
 export default function PatientDetail({ patientId }: PatientDetailProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const { messages } = useMessages()
   const [patient, setPatient] = useState<PatientDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -79,12 +84,12 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error("Patient not found")
+          throw new Error(messages.patientDetail.errors.notFound)
         }
         if (response.status === 403) {
-          throw new Error("You don't have permission to view this patient")
+          throw new Error(messages.patientDetail.errors.forbidden)
         }
-        throw new Error("Failed to fetch patient")
+        throw new Error(messages.patientDetail.errors.fetchFailed)
       }
 
       const data = await response.json()
@@ -151,7 +156,9 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
     return (
       <div className="flex items-center justify-center py-12">
         <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
-        <span className="ml-2 text-muted-foreground">Loading patient details...</span>
+        <span className="ml-2 text-muted-foreground">
+          {messages.patientDetail.loading}
+        </span>
       </div>
     )
   }
@@ -161,16 +168,16 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
       <div className="rounded-lg border border-destructive bg-destructive/10 p-6">
         <div className="flex items-center gap-2 text-destructive mb-4">
           <AlertCircle className="h-5 w-5" />
-          <h3 className="font-semibold">Error</h3>
+          <h3 className="font-semibold">{messages.common.errorTitle}</h3>
         </div>
         <p className="text-sm mb-4">{error}</p>
         <div className="flex gap-2">
           <Button onClick={fetchPatient} variant="outline">
             <RefreshCw className="h-4 w-4 mr-2" />
-            Retry
+            {messages.common.retry}
           </Button>
           <Button onClick={() => router.back()} variant="outline">
-            Go Back
+            {messages.common.back}
           </Button>
         </div>
       </div>
@@ -195,21 +202,26 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
                 {patient.user.firstName} {patient.user.lastName}
               </h2>
               <p className="text-muted-foreground">
-                {calculateAge(patient.dateOfBirth)} years old
+                {calculateAge(patient.dateOfBirth)} {messages.patientDetail.yearsOld}
               </p>
             </div>
           </div>
           <div className="flex gap-2">
             <Button asChild variant="outline" size="sm">
-              <Link href={`/appointments/book?patientId=${patient.id}`}>
+              <Link
+                href={withLocalePath(
+                  locale,
+                  `/appointments/book?patientId=${patient.id}`
+                )}
+              >
                 <Calendar className="h-4 w-4 mr-2" />
-                Book Appointment
+                {messages.patientDetail.bookAppointment}
               </Link>
             </Button>
             <Button asChild variant="outline" size="sm">
-              <Link href={`/patients/${patient.id}/edit`}>
+              <Link href={withLocalePath(locale, `/patients/${patient.id}/edit`)}>
                 <Edit className="h-4 w-4 mr-2" />
-                Edit
+                {messages.common.edit}
               </Link>
             </Button>
           </div>
@@ -219,7 +231,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              Email
+              {messages.patientDetail.labels.email}
             </p>
             <p className="text-sm">{patient.user.email}</p>
           </div>
@@ -228,7 +240,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                Phone
+                {messages.patientDetail.labels.phone}
               </p>
               <p className="text-sm">{patient.user.phone}</p>
             </div>
@@ -237,7 +249,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              Date of Birth
+              {messages.patientDetail.labels.dateOfBirth}
             </p>
             <p className="text-sm">{formatDate(patient.dateOfBirth)}</p>
           </div>
@@ -246,7 +258,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2">
                 <FileCheck className="h-4 w-4" />
-                Medical Record Number
+                {messages.patientDetail.labels.mrn}
               </p>
               <p className="text-sm font-mono">{patient.medicalRecordNumber}</p>
             </div>
@@ -260,12 +272,12 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
           <div className="rounded-lg border bg-card p-6 shadow-sm">
             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
               <User className="h-5 w-5" />
-              Parent/Guardian
+              {messages.patientDetail.sections.parent}
             </h3>
             <div className="space-y-3">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">
-                  Name
+                  {messages.patientDetail.labels.name}
                 </p>
                 <p className="text-lg font-semibold">
                   {patient.parent.firstName} {patient.parent.lastName}
@@ -274,7 +286,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  Email
+                  {messages.patientDetail.labels.email}
                 </p>
                 <p className="text-sm">{patient.parent.email}</p>
               </div>
@@ -286,12 +298,12 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
         <div className="rounded-lg border bg-card p-6 shadow-sm">
           <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <AlertCircle className="h-5 w-5" />
-            Emergency Contact
+            {messages.patientDetail.sections.emergency}
           </h3>
           <div className="space-y-3">
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">
-                Name
+                {messages.patientDetail.labels.name}
               </p>
               <p className="text-lg font-semibold">
                 {patient.emergencyContactName}
@@ -300,7 +312,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                Phone
+                {messages.patientDetail.labels.phone}
               </p>
               <p className="text-sm">{patient.emergencyContactPhone}</p>
             </div>
@@ -313,13 +325,13 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
         <div className="rounded-lg border bg-card p-6 shadow-sm">
           <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <Heart className="h-5 w-5" />
-            Medical Information
+            {messages.patientDetail.sections.medical}
           </h3>
           <div className="space-y-4">
             {patient.medicalHistory && (
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2">
-                  Medical History
+                  {messages.patientDetail.labels.medicalHistory}
                 </p>
                 <p className="text-sm whitespace-pre-wrap bg-muted/50 p-3 rounded-md">
                   {patient.medicalHistory}
@@ -329,7 +341,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
             {patient.currentMedications && (
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-2">
-                  Current Medications
+                  {messages.patientDetail.labels.currentMedications}
                 </p>
                 <p className="text-sm whitespace-pre-wrap bg-muted/50 p-3 rounded-md">
                   {patient.currentMedications}
@@ -345,24 +357,24 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Recent Appointments
+            {messages.patientDetail.sections.recentAppointments}
           </h3>
           <Button asChild variant="outline" size="sm">
-            <Link href={`/patients/${patient.id}/appointments`}>
-              View All
+            <Link href={withLocalePath(locale, `/patients/${patient.id}/appointments`)}>
+              {messages.patientDetail.viewAll}
             </Link>
           </Button>
         </div>
         {patient.appointments.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No appointments found.
+            {messages.patientDetail.noAppointments}
           </p>
         ) : (
           <div className="space-y-3">
             {patient.appointments.map((appointment) => (
               <Link
                 key={appointment.id}
-                href={`/appointments/${appointment.id}`}
+                href={withLocalePath(locale, `/appointments/${appointment.id}`)}
                 className="block rounded-md border p-4 hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-start justify-between">
@@ -374,7 +386,8 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
                       {formatDateTime(appointment.scheduledAt)}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Duration: {appointment.durationMinutes} minutes
+                      {messages.patientDetail.durationLabel}{" "}
+                      {appointment.durationMinutes} {messages.patientDetail.minutes}
                     </p>
                   </div>
                   <span
@@ -397,11 +410,13 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Recent Documents
+            {messages.patientDetail.sections.recentDocuments}
           </h3>
         </div>
         {patient.documents.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No documents found.</p>
+          <p className="text-sm text-muted-foreground">
+            {messages.patientDetail.noDocuments}
+          </p>
         ) : (
           <div className="space-y-2">
             {patient.documents.map((document) => (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -10,22 +10,34 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { User, Mail, Phone, Save, Lock, Eye, EyeOff } from "lucide-react"
+import { useMessages } from "@/lib/i18n-client"
+import { withLocalePath } from "@/lib/i18n"
 
-const profileSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().optional(),
-})
+const createProfileSchema = (messages: any) =>
+  z.object({
+    firstName: z.string().min(1, messages.profileForm.errors.firstNameRequired),
+    lastName: z.string().min(1, messages.profileForm.errors.lastNameRequired),
+    email: z.string().email(messages.profileForm.errors.invalidEmail),
+    phone: z.string().optional(),
+  })
 
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, "Current password is required"),
-  newPassword: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string().min(1, "Please confirm your password"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+const createPasswordSchema = (messages: any) =>
+  z
+    .object({
+      currentPassword: z
+        .string()
+        .min(1, messages.profileForm.errors.currentPasswordRequired),
+      newPassword: z
+        .string()
+        .min(6, messages.profileForm.errors.newPasswordMin),
+      confirmPassword: z
+        .string()
+        .min(1, messages.profileForm.errors.confirmPasswordRequired),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: messages.profileForm.errors.passwordMismatch,
+      path: ["confirmPassword"],
+    })
 
 type ProfileFormData = z.infer<typeof profileSchema>
 type PasswordFormData = z.infer<typeof passwordSchema>
@@ -52,6 +64,10 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const { messages, locale } = useMessages()
+
+  const profileSchema = useMemo(() => createProfileSchema(messages), [messages])
+  const passwordSchema = useMemo(() => createPasswordSchema(messages), [messages])
 
   const {
     register: registerProfile,
@@ -103,10 +119,10 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || "Failed to update profile")
+        throw new Error(result.error || messages.profileForm.errors.updateFailed)
       }
 
-      setSuccess("Profile updated successfully!")
+      setSuccess(messages.profileForm.success.profileUpdated)
       
       // Refresh the page to show updated data
       // This will trigger a server-side re-render with fresh data from database
@@ -114,13 +130,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       
       // Optionally redirect to dashboard to see updated profile
       setTimeout(() => {
-        router.push("/dashboard")
+        router.push(withLocalePath(locale, "/dashboard"))
       }, 1500)
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000)
     } catch (err: any) {
-      setError(err.message || "An error occurred while updating your profile")
+      setError(err.message || messages.profileForm.errors.updateGeneric)
     } finally {
       setIsLoading(false)
     }
@@ -147,17 +163,17 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || "Failed to change password")
+        throw new Error(result.error || messages.profileForm.errors.changePasswordFailed)
       }
 
-      setSuccess("Password changed successfully!")
+      setSuccess(messages.profileForm.success.passwordChanged)
       setShowPasswordForm(false)
       resetPassword()
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000)
     } catch (err: any) {
-      setError(err.message || "An error occurred while changing your password")
+      setError(err.message || messages.profileForm.errors.changePasswordGeneric)
     } finally {
       setIsLoading(false)
     }
@@ -185,13 +201,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
   const getRoleLabel = (role: string) => {
     switch (role) {
       case "admin":
-        return "Administrator"
+        return messages.roles.admin
       case "doctor":
-        return "Doctor"
+        return messages.roles.doctor
       case "parent":
-        return "Parent"
+        return messages.roles.parent
       case "patient":
-        return "Patient"
+        return messages.roles.patient
       default:
         return role
     }
@@ -239,7 +255,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             <div>
               <Label htmlFor="firstName">
                 <User className="h-4 w-4 inline mr-2" />
-                First Name *
+                {messages.profileForm.labels.firstName}
               </Label>
               <Input
                 id="firstName"
@@ -257,7 +273,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             <div>
               <Label htmlFor="lastName">
                 <User className="h-4 w-4 inline mr-2" />
-                Last Name *
+                {messages.profileForm.labels.lastName}
               </Label>
               <Input
                 id="lastName"
@@ -276,7 +292,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
           <div>
             <Label htmlFor="email">
               <Mail className="h-4 w-4 inline mr-2" />
-              Email *
+              {messages.profileForm.labels.email}
             </Label>
             <Input
               id="email"
@@ -295,14 +311,14 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
           <div>
             <Label htmlFor="phone">
               <Phone className="h-4 w-4 inline mr-2" />
-              Phone
+              {messages.profileForm.labels.phone}
             </Label>
             <Input
               id="phone"
               type="tel"
               {...registerProfile("phone")}
               className="mt-1"
-              placeholder="010-1234-5678"
+              placeholder={messages.profileForm.placeholders.phone}
               disabled={isLoading}
             />
             {profileErrors.phone && (
@@ -315,7 +331,9 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
           <div className="flex justify-end pt-4">
             <Button type="submit" disabled={isLoading}>
               <Save className="h-4 w-4 mr-2" />
-              {isLoading ? "Saving..." : "Save Changes"}
+              {isLoading
+                ? messages.profileForm.actions.saving
+                : messages.profileForm.actions.saveChanges}
             </Button>
           </div>
         </form>
@@ -326,10 +344,10 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         <div className="mb-4">
           <h3 className="text-lg font-semibold flex items-center">
             <Lock className="h-5 w-5 mr-2" />
-            Change Password
+            {messages.profileForm.password.title}
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Update your password to keep your account secure
+            {messages.profileForm.password.subtitle}
           </p>
         </div>
 
@@ -339,12 +357,14 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             variant="outline"
             onClick={() => setShowPasswordForm(true)}
           >
-            Change Password
+            {messages.profileForm.password.openForm}
           </Button>
         ) : (
           <form onSubmit={handleSubmitPassword(onSubmitPassword)} className="space-y-4">
             <div>
-              <Label htmlFor="currentPassword">Current Password *</Label>
+              <Label htmlFor="currentPassword">
+                {messages.profileForm.password.currentPassword}
+              </Label>
               <div className="relative mt-1">
                 <Input
                   id="currentPassword"
@@ -373,7 +393,9 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="newPassword">New Password *</Label>
+              <Label htmlFor="newPassword">
+                {messages.profileForm.password.newPassword}
+              </Label>
               <div className="relative mt-1">
                 <Input
                   id="newPassword"
@@ -402,7 +424,9 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="confirmPassword">Confirm New Password *</Label>
+              <Label htmlFor="confirmPassword">
+                {messages.profileForm.password.confirmPassword}
+              </Label>
               <div className="relative mt-1">
                 <Input
                   id="confirmPassword"
@@ -441,11 +465,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
                 }}
                 disabled={isLoading}
               >
-                Cancel
+                {messages.common.cancel}
               </Button>
               <Button type="submit" disabled={isLoading}>
                 <Lock className="h-4 w-4 mr-2" />
-                {isLoading ? "Changing..." : "Change Password"}
+                {isLoading
+                  ? messages.profileForm.password.changing
+                  : messages.profileForm.password.change}
               </Button>
             </div>
           </form>
@@ -454,22 +480,30 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
 
       {/* Account Information */}
       <div className="rounded-lg border bg-card p-6 shadow-sm">
-        <h3 className="text-lg font-semibold mb-4">Account Information</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {messages.profileForm.account.title}
+        </h3>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Account Created:</span>
+            <span className="text-muted-foreground">
+              {messages.profileForm.account.createdAt}
+            </span>
             <span className="font-medium">
               {new Date(initialData.createdAt).toLocaleDateString()}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Last Updated:</span>
+            <span className="text-muted-foreground">
+              {messages.profileForm.account.updatedAt}
+            </span>
             <span className="font-medium">
               {new Date(initialData.updatedAt).toLocaleDateString()}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">User ID:</span>
+            <span className="text-muted-foreground">
+              {messages.profileForm.account.userId}
+            </span>
             <span className="font-mono text-xs">
               {initialData.id.substring(0, 8)}...
             </span>

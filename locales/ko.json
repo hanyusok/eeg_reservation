@@ -1,0 +1,686 @@
+{
+  "home": {
+    "title": "EEG 예약 시스템",
+    "subtitle": "소아 간질 EEG 모니터링을 위한 온라인 예약 시스템",
+    "ctaLogin": "로그인",
+    "ctaDashboard": "대시보드로 이동"
+  },
+  "common": {
+    "back": "뒤로",
+    "loading": "로딩 중...",
+    "retry": "다시 시도",
+    "save": "저장",
+    "cancel": "취소",
+    "edit": "수정",
+    "errorPrefix": "오류:",
+    "errorTitle": "오류"
+  },
+  "nav": {
+    "brand": "EEG 예약",
+    "brandShort": "EEG",
+    "dashboard": "대시보드",
+    "appointments": "예약",
+    "patients": "환자",
+    "information": "안내",
+    "admin": "관리",
+    "profile": "프로필",
+    "signOut": "로그아웃"
+  },
+  "roles": {
+    "admin": "관리자",
+    "doctor": "의사",
+    "parent": "보호자",
+    "patient": "환자"
+  },
+  "userProfile": {
+    "idLabel": "ID:",
+    "editProfile": "프로필 수정",
+    "signOut": "로그아웃"
+  },
+  "auth": {
+    "login": {
+      "title": "계정에 로그인",
+      "subtitle": "또는",
+      "createAccount": "새 계정 만들기",
+      "continueWithGoogle": "Google로 계속하기",
+      "continueWithKakao": "Kakao로 계속하기",
+      "orContinueWith": "또는 다음으로 계속",
+      "emailLabel": "이메일",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "비밀번호",
+      "passwordPlaceholder": "••••••••",
+      "signIn": "로그인",
+      "signingIn": "로그인 중...",
+      "errors": {
+        "invalidEmail": "유효하지 않은 이메일입니다",
+        "passwordMin": "비밀번호는 최소 6자 이상이어야 합니다",
+        "invalidCredentials": "이메일 또는 비밀번호가 올바르지 않습니다",
+        "generic": "오류가 발생했습니다. 다시 시도해주세요.",
+        "oauthFailed": "{{provider}} 로그인에 실패했습니다. 다시 시도해주세요."
+      }
+    },
+    "register": {
+      "title": "계정 만들기",
+      "subtitle": "또는",
+      "signIn": "기존 계정으로 로그인",
+      "firstNameLabel": "이름",
+      "lastNameLabel": "성",
+      "emailLabel": "이메일",
+      "emailPlaceholder": "you@example.com",
+      "phoneLabel": "전화번호 (선택)",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "roleLabel": "계정 유형",
+      "roleParent": "보호자",
+      "rolePatient": "환자",
+      "passwordLabel": "비밀번호",
+      "passwordPlaceholder": "••••••••",
+      "confirmPasswordLabel": "비밀번호 확인",
+      "confirmPasswordPlaceholder": "••••••••",
+      "createAccount": "계정 만들기",
+      "creatingAccount": "계정 생성 중...",
+      "errors": {
+        "firstNameRequired": "이름을 입력해주세요",
+        "lastNameRequired": "성을 입력해주세요",
+        "invalidEmail": "유효하지 않은 이메일입니다",
+        "passwordMin": "비밀번호는 최소 6자 이상이어야 합니다",
+        "passwordMismatch": "비밀번호가 일치하지 않습니다",
+        "registrationFailed": "회원가입에 실패했습니다",
+        "generic": "오류가 발생했습니다. 다시 시도해주세요."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "대시보드",
+    "welcomePrefix": "다시 오신 것을 환영합니다,",
+    "roleLabel": "권한",
+    "appointments": {
+      "title": "예약",
+      "description": "예약 내역을 확인하고 관리합니다",
+      "view": "예약 보기",
+      "book": "새 예약"
+    },
+    "patients": {
+      "title": "환자",
+      "description": "환자 프로필을 관리합니다",
+      "view": "환자 보기",
+      "add": "환자 추가"
+    },
+    "profile": {
+      "title": "프로필",
+      "description": "계정 정보를 관리합니다",
+      "edit": "프로필 수정"
+    }
+  },
+  "appointments": {
+    "title": "예약",
+    "subtitle": "예약 내역을 확인하고 관리합니다",
+    "cta": "새 예약 생성"
+  },
+  "appointmentsBook": {
+    "title": "예약 생성",
+    "subtitle": "새 EEG 모니터링 예약을 등록합니다"
+  },
+  "patients": {
+    "title": "환자",
+    "subtitle": "환자 프로필을 관리합니다",
+    "cta": "신규 환자 추가"
+  },
+  "patientsNew": {
+    "title": "신규 환자 추가",
+    "subtitle": "새 환자 프로필을 생성합니다"
+  },
+  "patientsDetail": {
+    "title": "환자 상세",
+    "subtitle": "환자 정보를 확인하고 관리합니다"
+  },
+  "patientsAppointments": {
+    "title": "환자 예약",
+    "subtitle": "해당 환자의 모든 예약을 확인합니다",
+    "cta": "새 예약 생성"
+  },
+  "profile": {
+    "title": "프로필 수정",
+    "subtitle": "계정 정보와 설정을 수정합니다"
+  },
+  "admin": {
+    "title": "관리자 대시보드",
+    "subtitle": "시스템 데이터와 예약을 관리합니다",
+    "appointmentsTitle": "예약 관리",
+    "appointmentsSubtitle": "전체 예약을 확인하고 관리합니다",
+    "appointmentsCta": "예약 생성",
+    "patientsTitle": "환자 관리",
+    "patientsSubtitle": "전체 환자를 확인하고 관리합니다",
+    "patientsCta": "환자 추가",
+    "settingsTitle": "설정",
+    "settingsSubtitle": "시스템 설정을 구성합니다"
+  },
+  "information": {
+    "title": "EEG 검사 센터 정보",
+    "subtitle": "검사 센터 위치, 근무시간, 직원 정보 및 검사 준비사항을 확인하세요"
+  },
+  "informationCenter": {
+    "location": {
+      "title": "위치",
+      "addressLabel": "주소",
+      "addressLines": [
+        "서울특별시 강남구 테헤란로 123",
+        "EEG Monitoring Center, 3층"
+      ],
+      "phoneLabel": "전화",
+      "phoneValue": "02-1234-5678",
+      "emailLabel": "이메일",
+      "emailValue": "eeg-center@hospital.com",
+      "transitLabel": "대중교통:",
+      "transitText": "지하철 2호선 강남역 3번 출구에서 도보 5분",
+      "parkingLabel": "주차:",
+      "parkingText": "건물 지하 주차장 이용 가능 (검사 시간 동안 무료)"
+    },
+    "hours": {
+      "title": "운영 시간",
+      "schedule": [
+        { "label": "월요일 - 금요일", "time": "09:00 - 18:00" },
+        { "label": "토요일", "time": "09:00 - 13:00" },
+        { "label": "일요일 및 공휴일", "time": "휴무" }
+      ],
+      "emergencyTitle": "응급 예약:",
+      "emergencyText": "긴급한 경우 24시간 연락 가능",
+      "emergencyHotline": "응급 연락처: 02-1234-5678 (24/7)"
+    },
+    "staff": {
+      "title": "의료진 소개",
+      "members": [
+        {
+          "name": "Dr. 김신경",
+          "role": "Chief Neurologist",
+          "bio": "소아 신경과 전문의, 20년 이상의 경력"
+        },
+        {
+          "name": "Dr. 이뇌파",
+          "role": "EEG Specialist",
+          "bio": "뇌파 검사 전문의, 소아 뇌전증 진단 전문"
+        },
+        {
+          "name": "박기술사",
+          "role": "EEG Technologist",
+          "bio": "뇌파 검사 기술사, 10년 이상의 경력"
+        },
+        {
+          "name": "최간호사",
+          "role": "Registered Nurse",
+          "bio": "소아 간호 전문가, 환자 케어 전문"
+        }
+      ]
+    },
+    "preparation": {
+      "title": "EEG 검사 준비사항",
+      "before": {
+        "title": "검사 전 준비사항",
+        "items": [
+          {
+            "title": "머리 씻기:",
+            "text": "검사 전날 밤에 머리를 깨끗이 감고, 헤어 제품(스프레이, 젤, 왁스 등)을 사용하지 마세요."
+          },
+          {
+            "title": "수면 부족:",
+            "text": "검사 전날 밤에는 평소보다 2-3시간 적게 주무세요. (의사의 지시에 따라 다를 수 있습니다)"
+          },
+          {
+            "title": "약물 복용:",
+            "text": "평소 복용 중인 약물은 의사와 상의 후 복용 여부를 결정하세요. 약물 중단이 필요한 경우 의사가 미리 안내합니다."
+          },
+          {
+            "title": "식사:",
+            "text": "검사 당일 정상적으로 식사하셔도 됩니다. 단, 카페인 음료는 검사 4시간 전부터 피해주세요."
+          }
+        ]
+      },
+      "dayOf": {
+        "title": "검사 당일 준비사항",
+        "items": [
+          {
+            "title": "의복:",
+            "text": "편안한 옷을 입으시고, 상의는 앞단추나 지퍼가 있는 것이 좋습니다."
+          },
+          {
+            "title": "소지품:",
+            "text": "검사 중 움직임이 제한될 수 있으므로, 필요한 소지품만 가져오세요."
+          },
+          {
+            "title": "동반자:",
+            "text": "소아 환자의 경우 보호자 동반이 필수입니다."
+          },
+          {
+            "title": "도착 시간:",
+            "text": "예약 시간보다 15분 일찍 도착하여 준비 시간을 확보하세요."
+          }
+        ]
+      },
+      "during": {
+        "title": "검사 중 주의사항",
+        "items": [
+          "검사 중에는 가능한 한 움직이지 않도록 주의하세요.",
+          "깜빡이는 빛이나 특정 자극에 대한 검사가 포함될 수 있습니다.",
+          "검사 시간은 보통 1-2시간 정도 소요됩니다.",
+          "검사 후 전극 부착 자국이 남을 수 있으나, 하루 정도 지나면 사라집니다."
+        ]
+      },
+      "notice": {
+        "title": "⚠️ 중요 안내",
+        "body": "검사 전에 열이 나거나 감기 증상이 있으시면 미리 연락해 주세요. 검사 일정 조정이 필요할 수 있습니다."
+      }
+    }
+  },
+  "bookingForm": {
+    "loadingPatients": "환자 정보를 불러오는 중...",
+    "noPatients": "등록된 환자가 없습니다. 먼저 환자 프로필을 생성해주세요.",
+    "createPatient": "환자 프로필 생성",
+    "patientLabel": "환자 선택 *",
+    "patientPlaceholder": "-- 환자 선택 --",
+    "typeLabel": "예약 유형 *",
+    "dateTimeLabel": "날짜 및 시간 *",
+    "durationLabel": "소요 시간(분) *",
+    "notesLabel": "메모 (선택)",
+    "notesPlaceholder": "예약과 관련된 추가 정보를 입력하세요...",
+    "submit": "예약 생성",
+    "booking": "예약 중...",
+    "types": {
+      "initialConsultation": "초진 상담",
+      "eegMonitoring": "EEG 모니터링",
+      "followUp": "추적 방문"
+    },
+    "errors": {
+      "selectPatient": "환자를 선택해주세요",
+      "selectDateTime": "날짜와 시간을 선택해주세요",
+      "fetchPatientsFailed": "환자 정보를 불러오지 못했습니다",
+      "createFailed": "예약 생성에 실패했습니다"
+    }
+  },
+  "appointmentsList": {
+    "loading": "예약을 불러오는 중...",
+    "empty": "예약이 없습니다.",
+    "cta": "첫 예약 생성",
+    "viewDetails": "상세 보기",
+    "durationLabel": "소요 시간:",
+    "minutes": "분",
+    "errors": {
+      "fetchFailed": "예약을 불러오지 못했습니다"
+    }
+  },
+  "appointmentDetail": {
+    "loading": "예약 상세를 불러오는 중...",
+    "errorTitle": "예약 불러오기 오류",
+    "notFound": "예약을 찾을 수 없습니다.",
+    "backToList": "예약 목록으로",
+    "cancelling": "취소 중...",
+    "confirmCancel": "예약을 취소하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    "minutes": "분",
+    "notesPlaceholder": "예약 관련 메모를 입력하세요...",
+    "noNotes": "메모가 없습니다.",
+    "sections": {
+      "details": "예약 상세",
+      "patient": "환자 정보",
+      "parent": "보호자 정보",
+      "notes": "메모",
+      "documents": "관련 문서"
+    },
+    "labels": {
+      "scheduledAt": "예약 날짜 및 시간",
+      "duration": "소요 시간",
+      "patientName": "환자 이름",
+      "email": "이메일",
+      "name": "이름"
+    },
+    "errors": {
+      "notFound": "예약을 찾을 수 없습니다",
+      "forbidden": "이 예약을 볼 권한이 없습니다",
+      "fetchFailed": "예약을 불러오지 못했습니다",
+      "updateFailed": "예약 수정에 실패했습니다",
+      "cancelFailed": "예약 취소에 실패했습니다"
+    },
+    "success": {
+      "updated": "예약이 수정되었습니다!",
+      "cancelled": "예약이 취소되었습니다!"
+    }
+  },
+  "patientsList": {
+    "loading": "환자 정보를 불러오는 중...",
+    "empty": "환자가 없습니다.",
+    "cta": "첫 환자 추가",
+    "ageLabel": "나이:",
+    "yearsOld": "세",
+    "dobLabel": "생년월일:",
+    "mrnLabel": "환자번호:",
+    "parentLabel": "보호자:",
+    "appointmentsLabel": "예약:",
+    "bookAppointment": "예약 생성",
+    "viewDetails": "상세 보기",
+    "viewAppointments": "예약 보기",
+    "errors": {
+      "fetchFailed": "환자 정보를 불러오지 못했습니다"
+    }
+  },
+  "patientAppointments": {
+    "loading": "예약을 불러오는 중...",
+    "empty": "해당 환자의 예약이 없습니다.",
+    "book": "예약 생성",
+    "viewDetails": "상세 보기",
+    "durationLabel": "소요 시간:",
+    "minutes": "분",
+    "parentLabel": "보호자:",
+    "errors": {
+      "patientNotFound": "환자를 찾을 수 없습니다",
+      "forbidden": "예약을 볼 권한이 없습니다",
+      "fetchFailed": "예약을 불러오지 못했습니다"
+    }
+  },
+  "patientDetail": {
+    "loading": "환자 정보를 불러오는 중...",
+    "yearsOld": "세",
+    "bookAppointment": "예약 생성",
+    "viewAll": "전체 보기",
+    "noAppointments": "예약이 없습니다.",
+    "noDocuments": "문서가 없습니다.",
+    "durationLabel": "소요 시간:",
+    "minutes": "분",
+    "sections": {
+      "parent": "보호자 정보",
+      "emergency": "비상 연락처",
+      "medical": "의료 정보",
+      "recentAppointments": "최근 예약",
+      "recentDocuments": "최근 문서"
+    },
+    "labels": {
+      "email": "이메일",
+      "phone": "전화번호",
+      "dateOfBirth": "생년월일",
+      "mrn": "환자번호",
+      "name": "이름",
+      "medicalHistory": "병력",
+      "currentMedications": "복용 중인 약"
+    },
+    "errors": {
+      "notFound": "환자를 찾을 수 없습니다",
+      "forbidden": "이 환자를 볼 권한이 없습니다",
+      "fetchFailed": "환자 정보를 불러오지 못했습니다"
+    }
+  },
+  "patientForm": {
+    "sections": {
+      "patientInfo": "환자 정보",
+      "medicalInfo": "의료 정보"
+    },
+    "labels": {
+      "firstName": "이름 *",
+      "lastName": "성 *",
+      "email": "이메일 *",
+      "phone": "전화번호",
+      "parentEmail": "보호자 이메일 (선택)",
+      "dateOfBirth": "생년월일 *",
+      "medicalRecordNumber": "환자번호",
+      "medicalHistory": "병력",
+      "currentMedications": "복용 중인 약",
+      "emergencyContactName": "비상 연락처 이름 *",
+      "emergencyContactPhone": "비상 연락처 전화번호 *"
+    },
+    "placeholders": {
+      "phone": "+1 (555) 123-4567",
+      "parentEmail": "parent@example.com",
+      "medicalRecordNumber": "선택",
+      "medicalHistory": "과거 병력, 수술 여부 등",
+      "currentMedications": "복용 중인 약과 용량",
+      "emergencyContactPhone": "+1 (555) 123-4567"
+    },
+    "actions": {
+      "saving": "저장 중...",
+      "create": "환자 생성",
+      "update": "환자 수정"
+    },
+    "parentFound": "✓ 확인됨:",
+    "searching": "검색 중...",
+    "parentHint": "기존 보호자 계정의 이메일을 입력하면 연동됩니다",
+    "errors": {
+      "firstNameRequired": "이름을 입력해주세요",
+      "lastNameRequired": "성을 입력해주세요",
+      "invalidEmail": "유효하지 않은 이메일입니다",
+      "dobRequired": "생년월일을 입력해주세요",
+      "emergencyNameRequired": "비상 연락처 이름을 입력해주세요",
+      "emergencyPhoneRequired": "비상 연락처 전화번호를 입력해주세요",
+      "notParentAccount": "보호자 계정이 아닙니다",
+      "updateFailed": "환자 정보 수정에 실패했습니다",
+      "createUserFailed": "사용자 계정 생성에 실패했습니다",
+      "createPatientFailed": "환자 프로필 생성에 실패했습니다"
+    }
+  },
+  "profileForm": {
+    "labels": {
+      "firstName": "이름 *",
+      "lastName": "성 *",
+      "email": "이메일 *",
+      "phone": "전화번호"
+    },
+    "placeholders": {
+      "phone": "010-1234-5678"
+    },
+    "actions": {
+      "saving": "저장 중...",
+      "saveChanges": "변경 사항 저장"
+    },
+    "password": {
+      "title": "비밀번호 변경",
+      "subtitle": "계정 보안을 위해 비밀번호를 변경하세요",
+      "openForm": "비밀번호 변경",
+      "currentPassword": "현재 비밀번호 *",
+      "newPassword": "새 비밀번호 *",
+      "confirmPassword": "새 비밀번호 확인 *",
+      "changing": "변경 중...",
+      "change": "비밀번호 변경"
+    },
+    "account": {
+      "title": "계정 정보",
+      "createdAt": "계정 생성일:",
+      "updatedAt": "마지막 수정:",
+      "userId": "사용자 ID:"
+    },
+    "success": {
+      "profileUpdated": "프로필이 수정되었습니다!",
+      "passwordChanged": "비밀번호가 변경되었습니다!"
+    },
+    "errors": {
+      "firstNameRequired": "이름을 입력해주세요",
+      "lastNameRequired": "성을 입력해주세요",
+      "invalidEmail": "유효하지 않은 이메일입니다",
+      "currentPasswordRequired": "현재 비밀번호를 입력해주세요",
+      "newPasswordMin": "비밀번호는 최소 6자 이상이어야 합니다",
+      "confirmPasswordRequired": "비밀번호 확인을 입력해주세요",
+      "passwordMismatch": "비밀번호가 일치하지 않습니다",
+      "updateFailed": "프로필 수정에 실패했습니다",
+      "updateGeneric": "프로필 수정 중 오류가 발생했습니다",
+      "changePasswordFailed": "비밀번호 변경에 실패했습니다",
+      "changePasswordGeneric": "비밀번호 변경 중 오류가 발생했습니다"
+    }
+  },
+  "adminDashboard": {
+    "loading": "대시보드를 불러오는 중...",
+    "viewAll": "전체 보기 →",
+    "stats": {
+      "totalPatients": "총 환자",
+      "totalAppointments": "총 예약",
+      "todayAppointments": "오늘 예약",
+      "upcoming": "예정"
+    },
+    "actions": {
+      "title": "예약 빠른 작업",
+      "manageAll": "전체 관리",
+      "scheduled": "예약됨",
+      "completed": "완료됨",
+      "cancelled": "취소됨",
+      "rescheduled": "변경됨",
+      "createAppointment": "예약 생성",
+      "createAppointmentHint": "새 예약을 등록합니다",
+      "addPatient": "환자 추가",
+      "addPatientHint": "새 환자 프로필을 생성합니다",
+      "settings": "설정",
+      "settingsHint": "시스템 설정을 구성합니다"
+    },
+    "today": {
+      "title": "오늘의 예약",
+      "viewAll": "전체 보기",
+      "empty": "오늘 예약이 없습니다",
+      "view": "보기"
+    }
+  },
+  "adminAppointmentsList": {
+    "loading": "예약을 불러오는 중...",
+    "searchPlaceholder": "환자 이름 또는 이메일로 검색...",
+    "empty": "예약이 없습니다",
+    "manage": "관리",
+    "minutes": "분",
+    "filters": {
+      "all": "전체 상태",
+      "scheduled": "예약됨",
+      "completed": "완료됨",
+      "cancelled": "취소됨",
+      "rescheduled": "변경됨"
+    },
+    "labels": {
+      "patient": "환자:",
+      "parent": "보호자:",
+      "dateTime": "날짜 및 시간:",
+      "duration": "소요 시간:",
+      "notes": "메모:"
+    },
+    "showing": "예약 {{filtered}}건 / 전체 {{total}}건",
+    "errors": {
+      "fetchFailed": "예약을 불러오지 못했습니다"
+    }
+  },
+  "adminPatientsList": {
+    "loading": "환자 정보를 불러오는 중...",
+    "searchPlaceholder": "이름, 이메일, 환자번호로 검색...",
+    "empty": "환자가 없습니다",
+    "emptySearch": "검색 결과가 없습니다",
+    "years": "세",
+    "columns": {
+      "name": "환자 이름",
+      "age": "나이",
+      "email": "이메일",
+      "mrn": "환자번호",
+      "parent": "보호자",
+      "appointments": "예약",
+      "actions": "작업"
+    },
+    "actions": {
+      "view": "보기"
+    },
+    "showing": "환자 {{filtered}}명 / 전체 {{total}}명",
+    "errors": {
+      "fetchFailed": "환자 정보를 불러오지 못했습니다"
+    }
+  },
+  "adminAppointmentDetail": {
+    "title": "예약 상세",
+    "loading": "예약을 불러오는 중...",
+    "notFound": "예약을 찾을 수 없습니다",
+    "backToList": "목록으로",
+    "confirmCancel": "예약을 취소하시겠습니까? 되돌릴 수 없습니다.",
+    "minutes": "분",
+    "sections": {
+      "info": "예약 정보",
+      "patient": "환자 정보"
+    },
+    "labels": {
+      "status": "상태",
+      "scheduledAt": "날짜 및 시간",
+      "duration": "소요 시간",
+      "notes": "메모",
+      "patientName": "환자 이름",
+      "email": "이메일",
+      "parent": "보호자"
+    },
+    "statuses": {
+      "scheduled": "예약됨",
+      "completed": "완료됨",
+      "cancelled": "취소됨",
+      "rescheduled": "변경됨"
+    },
+    "actions": {
+      "markCompleted": "완료 처리",
+      "marking": "처리 중...",
+      "cancel": "예약 취소",
+      "cancelling": "취소 중...",
+      "saveChanges": "변경 사항 저장",
+      "viewPatient": "환자 프로필 보기"
+    },
+    "errors": {
+      "fetchFailed": "예약을 불러오지 못했습니다",
+      "updateFailed": "예약 수정에 실패했습니다",
+      "completeFailed": "완료 처리에 실패했습니다",
+      "cancelFailed": "예약 취소에 실패했습니다"
+    }
+  },
+  "appointmentNotes": {
+    "title": "예약 메모",
+    "addLabel": "메모 추가",
+    "placeholder": "예약 관련 메모를 입력하세요...",
+    "add": "메모 추가",
+    "adding": "추가 중...",
+    "empty": "메모가 없습니다. 위에서 추가하세요.",
+    "errors": {
+      "addFailed": "메모 추가에 실패했습니다"
+    }
+  },
+  "documentList": {
+    "title": "의료 문서",
+    "uploadToggle": "문서 업로드",
+    "selectFile": "파일 선택",
+    "upload": "업로드",
+    "uploading": "업로드 중...",
+    "loading": "문서를 불러오는 중...",
+    "empty": "업로드된 문서가 없습니다.",
+    "download": "다운로드",
+    "uploadedBy": "{{name}} 업로드 • {{date}}",
+    "errors": {
+      "uploadFailed": "문서 업로드에 실패했습니다"
+    }
+  },
+  "settingsPanel": {
+    "saving": "저장 중...",
+    "save": "설정 저장",
+    "noteTitle": "안내:",
+    "noteBody": "보안을 위해 API 키 등 민감한 설정은 데이터베이스가 아닌 환경변수에 저장해야 합니다. 이 UI는 표시 목적입니다.",
+    "messages": {
+      "saved": "설정이 저장되었습니다! (실서비스에서는 안전하게 저장됩니다)",
+      "failed": "설정 저장에 실패했습니다",
+      "failedPrefix": "실패"
+    },
+    "zapier": {
+      "title": "Zapier 연동",
+      "webhookLabel": "Zapier Webhook URL",
+      "webhookPlaceholder": "https://hooks.zapier.com/hooks/catch/...",
+      "webhookHint": "Zapier 웹훅 트리거에서 URL을 확인하세요"
+    },
+    "email": {
+      "title": "이메일 설정",
+      "providerLabel": "이메일 제공자",
+      "providerHint": "환경변수에서 이메일 제공자를 설정하세요"
+    },
+    "sms": {
+      "title": "SMS 설정",
+      "providerLabel": "SMS 제공자",
+      "providerHint": "환경변수에서 SMS 제공자를 설정하세요"
+    },
+    "calendly": {
+      "title": "Calendly 연동",
+      "apiKeyLabel": "Calendly API Key",
+      "apiKeyPlaceholder": "Calendly API 키 입력",
+      "apiKeyHint": "보안을 위해 환경변수에 설정하세요"
+    },
+    "providers": {
+      "console": "콘솔 (개발용)",
+      "resend": "Resend",
+      "sendgrid": "SendGrid",
+      "smtp": "SMTP",
+      "twilio": "Twilio"
+    }
+  }
+}

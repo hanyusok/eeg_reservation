@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
+import { useMessages } from "@/lib/i18n-client"
 
 interface Appointment {
   id: string
@@ -27,6 +30,9 @@ interface Appointment {
 }
 
 export default function AdminAppointmentsList() {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const { messages } = useMessages()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -46,7 +52,7 @@ export default function AdminAppointmentsList() {
           : "/api/appointments"
       const response = await fetch(url)
       if (!response.ok) {
-        throw new Error("Failed to fetch appointments")
+        throw new Error(messages.adminAppointmentsList.errors.fetchFailed)
       }
       const data = await response.json()
       setAppointments(data.appointments || [])
@@ -101,15 +107,19 @@ export default function AdminAppointmentsList() {
   })
 
   if (loading) {
-    return <div className="text-center py-8">Loading appointments...</div>
+    return (
+      <div className="text-center py-8">
+        {messages.adminAppointmentsList.loading}
+      </div>
+    )
   }
 
   if (error) {
     return (
       <div className="text-center py-8 text-destructive">
-        Error: {error}
+        {messages.common.errorPrefix} {error}
         <Button onClick={fetchAppointments} className="ml-4" variant="outline">
-          Retry
+          {messages.common.retry}
         </Button>
       </div>
     )
@@ -121,7 +131,7 @@ export default function AdminAppointmentsList() {
       <div className="flex gap-4">
         <Input
           type="text"
-          placeholder="Search by patient name or email..."
+          placeholder={messages.adminAppointmentsList.searchPlaceholder}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-md"
@@ -131,11 +141,13 @@ export default function AdminAppointmentsList() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
-          <option value="all">All Status</option>
-          <option value="scheduled">Scheduled</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-          <option value="rescheduled">Rescheduled</option>
+          <option value="all">{messages.adminAppointmentsList.filters.all}</option>
+          <option value="scheduled">{messages.adminAppointmentsList.filters.scheduled}</option>
+          <option value="completed">{messages.adminAppointmentsList.filters.completed}</option>
+          <option value="cancelled">{messages.adminAppointmentsList.filters.cancelled}</option>
+          <option value="rescheduled">
+            {messages.adminAppointmentsList.filters.rescheduled}
+          </option>
         </select>
       </div>
 
@@ -143,7 +155,7 @@ export default function AdminAppointmentsList() {
       <div className="space-y-3">
         {filteredAppointments.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
-            No appointments found
+            {messages.adminAppointmentsList.empty}
           </div>
         ) : (
           filteredAppointments.map((appointment) => (
@@ -168,30 +180,35 @@ export default function AdminAppointmentsList() {
                   </div>
                   <div className="space-y-1 text-sm text-muted-foreground">
                     <p>
-                      <strong>Patient:</strong> {appointment.patient.user.firstName}{" "}
+                      <strong>{messages.adminAppointmentsList.labels.patient}</strong>{" "}
+                      {appointment.patient.user.firstName}{" "}
                       {appointment.patient.user.lastName} ({appointment.patient.user.email})
                     </p>
                     <p>
-                      <strong>Parent:</strong> {appointment.parent.firstName}{" "}
-                      {appointment.parent.lastName} ({appointment.parent.email})
+                      <strong>{messages.adminAppointmentsList.labels.parent}</strong>{" "}
+                      {appointment.parent.firstName} {appointment.parent.lastName} (
+                      {appointment.parent.email})
                     </p>
                     <p>
-                      <strong>Date & Time:</strong> {formatDate(appointment.scheduledAt)}
+                      <strong>{messages.adminAppointmentsList.labels.dateTime}</strong>{" "}
+                      {formatDate(appointment.scheduledAt)}
                     </p>
                     <p>
-                      <strong>Duration:</strong> {appointment.durationMinutes} minutes
+                      <strong>{messages.adminAppointmentsList.labels.duration}</strong>{" "}
+                      {appointment.durationMinutes} {messages.adminAppointmentsList.minutes}
                     </p>
                     {appointment.notes && (
                       <p>
-                        <strong>Notes:</strong> {appointment.notes}
+                        <strong>{messages.adminAppointmentsList.labels.notes}</strong>{" "}
+                        {appointment.notes}
                       </p>
                     )}
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`/admin/appointments/${appointment.id}`}>
-                      Manage
+                    <Link href={withLocalePath(locale, `/admin/appointments/${appointment.id}`)}>
+                      {messages.adminAppointmentsList.manage}
                     </Link>
                   </Button>
                 </div>
@@ -202,7 +219,9 @@ export default function AdminAppointmentsList() {
       </div>
 
       <div className="text-sm text-muted-foreground">
-        Showing {filteredAppointments.length} of {appointments.length} appointments
+        {messages.adminAppointmentsList.showing
+          .replace("{{filtered}}", String(filteredAppointments.length))
+          .replace("{{total}}", String(appointments.length))}
       </div>
     </div>
   )

@@ -1,13 +1,15 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import AppointmentNotes from "@/components/admin/appointment-notes"
 import DocumentList from "@/components/admin/document-list"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
+import { useMessages } from "@/lib/i18n-client"
 
 interface Appointment {
   id: string
@@ -40,6 +42,9 @@ interface Appointment {
 
 export default function AppointmentDetail({ appointmentId }: { appointmentId: string }) {
   const router = useRouter()
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const { messages } = useMessages()
   const [appointment, setAppointment] = useState<Appointment | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -60,7 +65,7 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
       setLoading(true)
       const response = await fetch(`/api/appointments/${appointmentId}`)
       if (!response.ok) {
-        throw new Error("Failed to fetch appointment")
+        throw new Error(messages.adminAppointmentDetail.errors.fetchFailed)
       }
       const data = await response.json()
       setAppointment(data.appointment)
@@ -93,7 +98,7 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
       })
 
       if (!response.ok) {
-        throw new Error("Failed to update appointment")
+        throw new Error(messages.adminAppointmentDetail.errors.updateFailed)
       }
 
       setIsEditing(false)
@@ -119,7 +124,7 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
       })
 
       if (!response.ok) {
-        throw new Error("Failed to mark appointment as completed")
+        throw new Error(messages.adminAppointmentDetail.errors.completeFailed)
       }
 
       setIsEditing(false)
@@ -136,7 +141,7 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
       return
     }
 
-    if (!window.confirm("Cancel this appointment? This cannot be undone.")) {
+    if (!window.confirm(messages.adminAppointmentDetail.confirmCancel)) {
       return
     }
 
@@ -147,7 +152,7 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
       })
 
       if (!response.ok) {
-        throw new Error("Failed to cancel appointment")
+        throw new Error(messages.adminAppointmentDetail.errors.cancelFailed)
       }
 
       setIsEditing(false)
@@ -178,15 +183,19 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
   }
 
   if (loading) {
-    return <div className="text-center py-8">Loading appointment...</div>
+    return (
+      <div className="text-center py-8">
+        {messages.adminAppointmentDetail.loading}
+      </div>
+    )
   }
 
   if (error || !appointment) {
     return (
       <div className="text-center py-8 text-destructive">
-        Error: {error || "Appointment not found"}
+        {messages.common.errorPrefix} {error || messages.adminAppointmentDetail.notFound}
         <Button onClick={fetchAppointment} className="ml-4" variant="outline">
-          Retry
+          {messages.common.retry}
         </Button>
       </div>
     )
@@ -196,14 +205,18 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
     <div className="container mx-auto p-6 max-w-6xl">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Appointment Details</h1>
+          <h1 className="text-3xl font-bold">
+            {messages.adminAppointmentDetail.title}
+          </h1>
           <p className="text-muted-foreground">
             {formatAppointmentType(appointment.appointmentType)}
           </p>
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline">
-            <Link href="/admin/appointments">Back to List</Link>
+            <Link href={withLocalePath(locale, "/admin/appointments")}>
+              {messages.adminAppointmentDetail.backToList}
+            </Link>
           </Button>
           <Button
             variant="outline"
@@ -215,7 +228,9 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
               appointment.status === "cancelled"
             }
           >
-            {actionLoading === "complete" ? "Marking..." : "Mark Completed"}
+            {actionLoading === "complete"
+              ? messages.adminAppointmentDetail.actions.marking
+              : messages.adminAppointmentDetail.actions.markCompleted}
           </Button>
           <Button
             variant="destructive"
@@ -226,10 +241,12 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
               appointment.status === "cancelled"
             }
           >
-            {actionLoading === "cancel" ? "Cancelling..." : "Cancel Appointment"}
+            {actionLoading === "cancel"
+              ? messages.adminAppointmentDetail.actions.cancelling
+              : messages.adminAppointmentDetail.actions.cancel}
           </Button>
           <Button onClick={() => setIsEditing(!isEditing)} variant="outline">
-            {isEditing ? "Cancel" : "Edit"}
+            {isEditing ? messages.common.cancel : messages.common.edit}
           </Button>
         </div>
       </div>
@@ -237,11 +254,15 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
       <div className="grid gap-6 md:grid-cols-2">
         {/* Appointment Information */}
         <div className="rounded-lg border bg-card p-6">
-          <h2 className="text-xl font-semibold mb-4">Appointment Information</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            {messages.adminAppointmentDetail.sections.info}
+          </h2>
           {isEditing ? (
             <div className="space-y-4">
               <div>
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status">
+                  {messages.adminAppointmentDetail.labels.status}
+                </Label>
                 <select
                   id="status"
                   value={editData.status}
@@ -250,14 +271,24 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
                   }
                   className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
-                  <option value="scheduled">Scheduled</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                  <option value="rescheduled">Rescheduled</option>
+                  <option value="scheduled">
+                    {messages.adminAppointmentDetail.statuses.scheduled}
+                  </option>
+                  <option value="completed">
+                    {messages.adminAppointmentDetail.statuses.completed}
+                  </option>
+                  <option value="cancelled">
+                    {messages.adminAppointmentDetail.statuses.cancelled}
+                  </option>
+                  <option value="rescheduled">
+                    {messages.adminAppointmentDetail.statuses.rescheduled}
+                  </option>
                 </select>
               </div>
               <div>
-                <Label htmlFor="scheduledAt">Date & Time</Label>
+                <Label htmlFor="scheduledAt">
+                  {messages.adminAppointmentDetail.labels.scheduledAt}
+                </Label>
                 <Input
                   id="scheduledAt"
                   type="datetime-local"
@@ -268,7 +299,9 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
                 />
               </div>
               <div>
-                <Label htmlFor="notes">Notes</Label>
+                <Label htmlFor="notes">
+                  {messages.adminAppointmentDetail.labels.notes}
+                </Label>
                 <textarea
                   id="notes"
                   value={editData.notes}
@@ -279,25 +312,37 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
                   className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 />
               </div>
-              <Button onClick={handleUpdate}>Save Changes</Button>
+              <Button onClick={handleUpdate}>
+                {messages.adminAppointmentDetail.actions.saveChanges}
+              </Button>
             </div>
           ) : (
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-muted-foreground">Status</p>
+                <p className="text-sm text-muted-foreground">
+                  {messages.adminAppointmentDetail.labels.status}
+                </p>
                 <p className="font-medium">{appointment.status}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Date & Time</p>
+                <p className="text-sm text-muted-foreground">
+                  {messages.adminAppointmentDetail.labels.scheduledAt}
+                </p>
                 <p className="font-medium">{formatDate(appointment.scheduledAt)}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Duration</p>
-                <p className="font-medium">{appointment.durationMinutes} minutes</p>
+                <p className="text-sm text-muted-foreground">
+                  {messages.adminAppointmentDetail.labels.duration}
+                </p>
+                <p className="font-medium">
+                  {appointment.durationMinutes} {messages.adminAppointmentDetail.minutes}
+                </p>
               </div>
               {appointment.notes && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Notes</p>
+                  <p className="text-sm text-muted-foreground">
+                    {messages.adminAppointmentDetail.labels.notes}
+                  </p>
                   <p className="font-medium">{appointment.notes}</p>
                 </div>
               )}
@@ -307,21 +352,29 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
 
         {/* Patient Information */}
         <div className="rounded-lg border bg-card p-6">
-          <h2 className="text-xl font-semibold mb-4">Patient Information</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            {messages.adminAppointmentDetail.sections.patient}
+          </h2>
           <div className="space-y-3">
             <div>
-              <p className="text-sm text-muted-foreground">Patient Name</p>
+              <p className="text-sm text-muted-foreground">
+                {messages.adminAppointmentDetail.labels.patientName}
+              </p>
               <p className="font-medium">
                 {appointment.patient.user.firstName}{" "}
                 {appointment.patient.user.lastName}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Email</p>
+              <p className="text-sm text-muted-foreground">
+                {messages.adminAppointmentDetail.labels.email}
+              </p>
               <p className="font-medium">{appointment.patient.user.email}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Parent/Guardian</p>
+              <p className="text-sm text-muted-foreground">
+                {messages.adminAppointmentDetail.labels.parent}
+              </p>
               <p className="font-medium">
                 {appointment.parent.firstName} {appointment.parent.lastName}
               </p>
@@ -330,8 +383,10 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
               </p>
             </div>
             <Button asChild variant="outline" size="sm">
-              <Link href={`/admin/patients/${appointment.patient.id}`}>
-                View Patient Profile
+              <Link
+                href={withLocalePath(locale, `/admin/patients/${appointment.patient.id}`)}
+              >
+                {messages.adminAppointmentDetail.actions.viewPatient}
               </Link>
             </Button>
           </div>

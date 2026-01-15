@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useMessages } from "@/lib/i18n-client"
 
 interface Note {
   id: string
@@ -20,6 +21,7 @@ export default function AppointmentNotes({ appointmentId }: { appointmentId: str
   const [newNote, setNewNote] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { messages } = useMessages()
 
   useEffect(() => {
     fetchNotes()
@@ -62,7 +64,7 @@ export default function AppointmentNotes({ appointmentId }: { appointmentId: str
       })
 
       if (!response.ok) {
-        throw new Error("Failed to add note")
+        throw new Error(messages.appointmentNotes.errors.addFailed)
       }
 
       setNewNote("")
@@ -86,26 +88,28 @@ export default function AppointmentNotes({ appointmentId }: { appointmentId: str
 
   return (
     <div className="rounded-lg border bg-card p-6">
-      <h2 className="text-xl font-semibold mb-4">Appointment Notes</h2>
+      <h2 className="text-xl font-semibold mb-4">
+        {messages.appointmentNotes.title}
+      </h2>
 
       {/* Add Note Form */}
       <div className="mb-6 space-y-4">
         <div>
-          <Label htmlFor="newNote">Add Note</Label>
+          <Label htmlFor="newNote">{messages.appointmentNotes.addLabel}</Label>
           <textarea
             id="newNote"
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
             rows={3}
             className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            placeholder="Add a note about this appointment..."
+            placeholder={messages.appointmentNotes.placeholder}
           />
         </div>
         {error && (
           <p className="text-sm text-destructive">{error}</p>
         )}
         <Button onClick={handleAddNote} disabled={loading || !newNote.trim()}>
-          {loading ? "Adding..." : "Add Note"}
+          {loading ? messages.appointmentNotes.adding : messages.appointmentNotes.add}
         </Button>
       </div>
 
@@ -113,7 +117,7 @@ export default function AppointmentNotes({ appointmentId }: { appointmentId: str
       <div className="space-y-3">
         {notes.length === 0 ? (
           <p className="text-muted-foreground text-center py-4">
-            No notes yet. Add a note above.
+            {messages.appointmentNotes.empty}
           </p>
         ) : (
           notes.map((note) => (

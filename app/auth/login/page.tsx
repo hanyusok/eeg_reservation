@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Chrome, MessageCircle } from "lucide-react"
 import { useMessages } from "@/lib/i18n-client"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
 
 const createLoginSchema = (messages: any) =>
   z.object({
@@ -21,6 +22,8 @@ type LoginForm = z.infer<ReturnType<typeof createLoginSchema>>
 
 export default function LoginPage() {
   const router = useRouter()
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const { messages } = useMessages()
@@ -53,7 +56,7 @@ export default function LoginPage() {
       }
 
       // Redirect based on role
-      router.push("/dashboard")
+      router.push(withLocalePath(locale, "/dashboard"))
       router.refresh()
     } catch (err) {
       setError(messages.auth.login.errors.generic)
@@ -67,7 +70,7 @@ export default function LoginPage() {
 
     try {
       await signIn(provider, {
-        callbackUrl: "/dashboard",
+        callbackUrl: withLocalePath(locale, "/dashboard"),
         redirect: true,
       })
       } catch (err) {
@@ -87,7 +90,10 @@ export default function LoginPage() {
           </h2>
           <p className="mt-2 text-center text-sm text-muted-foreground">
             {messages.auth.login.subtitle}{" "}
-            <Link href="/auth/register" className="text-primary hover:underline">
+            <Link
+              href={withLocalePath(locale, "/auth/register")}
+              className="text-primary hover:underline"
+            >
               {messages.auth.login.createAccount}
             </Link>
           </p>

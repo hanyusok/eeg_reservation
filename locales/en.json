@@ -15,6 +15,17 @@
     "errorPrefix": "Error:",
     "errorTitle": "Error"
   },
+  "status": {
+    "scheduled": "Scheduled",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "rescheduled": "Rescheduled"
+  },
+  "appointmentType": {
+    "initialConsultation": "Initial Consultation",
+    "eegMonitoring": "EEG Monitoring",
+    "followUp": "Follow-up"
+  },
   "nav": {
     "brand": "EEG Reservation",
     "brandShort": "EEG",

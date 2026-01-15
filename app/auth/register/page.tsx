@@ -1,13 +1,14 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useMessages } from "@/lib/i18n-client"
+import { getLocaleFromPathname, withLocalePath } from "@/lib/i18n"
 
 const createRegisterSchema = (messages: any) =>
   z
@@ -29,6 +30,8 @@ type RegisterForm = z.infer<ReturnType<typeof createRegisterSchema>>
 
 export default function RegisterPage() {
   const router = useRouter()
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const { messages } = useMessages()
@@ -75,7 +78,7 @@ export default function RegisterPage() {
       }
 
       // Redirect to login
-      router.push("/auth/login?registered=true")
+      router.push(withLocalePath(locale, "/auth/login?registered=true"))
     } catch (err) {
       setError(messages.auth.register.errors.generic)
       setIsLoading(false)
@@ -91,7 +94,10 @@ export default function RegisterPage() {
           </h2>
           <p className="mt-2 text-center text-sm text-muted-foreground">
             {messages.auth.register.subtitle}{" "}
-            <Link href="/auth/login" className="text-primary hover:underline">
+            <Link
+              href={withLocalePath(locale, "/auth/login")}
+              className="text-primary hover:underline"
+            >
               {messages.auth.register.signIn}
             </Link>
           </p>

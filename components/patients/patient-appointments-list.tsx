@@ -90,11 +90,17 @@ export default function PatientAppointmentsList({
     }
   }
 
-  const formatAppointmentType = (type: string) => {
-    return type
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
+  const getAppointmentTypeLabel = (type: string) => {
+    switch (type) {
+      case "initial_consultation":
+        return messages.appointmentType.initialConsultation
+      case "eeg_monitoring":
+        return messages.appointmentType.eegMonitoring
+      case "follow_up":
+        return messages.appointmentType.followUp
+      default:
+        return type
+    }
   }
 
   if (loading) {
@@ -152,15 +158,15 @@ export default function PatientAppointmentsList({
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <h3 className="text-xl font-semibold">
-                  {formatAppointmentType(appointment.appointmentType)}
+                  {getAppointmentTypeLabel(appointment.appointmentType)}
                 </h3>
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
                     appointment.status
                   )}`}
                 >
-                  {appointment.status.charAt(0).toUpperCase() +
-                    appointment.status.slice(1)}
+                  {messages.status[appointment.status as keyof typeof messages.status] ||
+                    appointment.status}
                 </span>
               </div>
               <div className="flex items-center gap-2 mb-2 text-muted-foreground">

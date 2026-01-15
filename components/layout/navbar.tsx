@@ -22,6 +22,7 @@ export function Navbar() {
     status === "loading" ||
     !session ||
     pathname?.startsWith("/auth") ||
+    (locale && pathname?.startsWith(`/${locale}/auth`)) ||
     pathname === "/"
   ) {
     return null

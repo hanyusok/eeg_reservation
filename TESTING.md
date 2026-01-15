@@ -77,9 +77,13 @@ Default credentials:
 
 ### 2.1 Login as Admin
 
-1. Navigate to http://localhost:3000/auth/login
+1. Navigate to http://localhost:3000/auth/login (or http://localhost:3000/ko/auth/login)
 2. Log in with admin credentials
 3. You should be redirected to `/admin` (not `/dashboard`)
+
+**Locale check:**
+- `http://localhost:3000/ko/auth/login`
+- `http://localhost:3000/ko/auth/register`
 
 ### 2.2 Test Admin Dashboard
 

@@ -16,12 +16,16 @@ npm run dev
 
 ### 2. Log In as Admin
 
-1. Open http://localhost:3000/auth/login
+1. Open http://localhost:3000/auth/login (or http://localhost:3000/ko/auth/login)
 2. Enter credentials:
    - Email: `admin@example.com`
    - Password: `admin123`
 3. Click "Sign in"
 4. You should be redirected to `/admin` (admin dashboard)
+
+**Locale check:**
+- `http://localhost:3000/ko/auth/login`
+- `http://localhost:3000/ko/auth/register`
 
 ### 3. Test Admin Dashboard
 

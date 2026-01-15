@@ -271,18 +271,10 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
                   }
                   className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
-                  <option value="scheduled">
-                    {messages.adminAppointmentDetail.statuses.scheduled}
-                  </option>
-                  <option value="completed">
-                    {messages.adminAppointmentDetail.statuses.completed}
-                  </option>
-                  <option value="cancelled">
-                    {messages.adminAppointmentDetail.statuses.cancelled}
-                  </option>
-                  <option value="rescheduled">
-                    {messages.adminAppointmentDetail.statuses.rescheduled}
-                  </option>
+                  <option value="scheduled">{messages.status.scheduled}</option>
+                  <option value="completed">{messages.status.completed}</option>
+                  <option value="cancelled">{messages.status.cancelled}</option>
+                  <option value="rescheduled">{messages.status.rescheduled}</option>
                 </select>
               </div>
               <div>
@@ -322,7 +314,10 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
                 <p className="text-sm text-muted-foreground">
                   {messages.adminAppointmentDetail.labels.status}
                 </p>
-                <p className="font-medium">{appointment.status}</p>
+                <p className="font-medium">
+                  {messages.status[appointment.status as keyof typeof messages.status] ||
+                    appointment.status}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">

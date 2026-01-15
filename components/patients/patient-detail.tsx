@@ -130,11 +130,17 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
     return age
   }
 
-  const formatAppointmentType = (type: string) => {
-    return type
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
+  const getAppointmentTypeLabel = (type: string) => {
+    switch (type) {
+      case "initial_consultation":
+        return messages.appointmentType.initialConsultation
+      case "eeg_monitoring":
+        return messages.appointmentType.eegMonitoring
+      case "follow_up":
+        return messages.appointmentType.followUp
+      default:
+        return type
+    }
   }
 
   const getStatusColor = (status: string) => {
@@ -380,7 +386,7 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <p className="font-medium">
-                      {formatAppointmentType(appointment.appointmentType)}
+                      {getAppointmentTypeLabel(appointment.appointmentType)}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       {formatDateTime(appointment.scheduledAt)}
@@ -395,8 +401,8 @@ export default function PatientDetail({ patientId }: PatientDetailProps) {
                       appointment.status
                     )}`}
                   >
-                    {appointment.status.charAt(0).toUpperCase() +
-                      appointment.status.slice(1)}
+                    {messages.status[appointment.status as keyof typeof messages.status] ||
+                      appointment.status}
                   </span>
                 </div>
               </Link>

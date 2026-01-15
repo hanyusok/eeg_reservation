@@ -70,6 +70,19 @@ export default function AdminDashboard() {
     })
   }
 
+  const getAppointmentTypeLabel = (type: string) => {
+    switch (type) {
+      case "initial_consultation":
+        return messages.appointmentType.initialConsultation
+      case "eeg_monitoring":
+        return messages.appointmentType.eegMonitoring
+      case "follow_up":
+        return messages.appointmentType.followUp
+      default:
+        return type
+    }
+  }
+
   if (loading) {
     return (
       <div className="text-center py-8">{messages.adminDashboard.loading}</div>
@@ -252,17 +265,12 @@ export default function AdminDashboard() {
                           : "bg-gray-100 text-gray-800"
                       }`}
                     >
-                      {appointment.status}
+                      {messages.status[appointment.status as keyof typeof messages.status] ||
+                        appointment.status}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {appointment.appointmentType
-                      .split("_")
-                      .map(
-                        (word: string) =>
-                          word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")}
+                    {getAppointmentTypeLabel(appointment.appointmentType)}
                   </p>
                 </div>
                 <Button asChild variant="ghost" size="sm">

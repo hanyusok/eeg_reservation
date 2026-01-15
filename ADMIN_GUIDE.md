@@ -73,6 +73,8 @@ npm run dev
 Open your browser and go to:
 ```
 http://localhost:3000/auth/login
+(KO) http://localhost:3000/ko/auth/login
+(KO Register) http://localhost:3000/ko/auth/register
 ```
 
 ### Step 3: Enter Credentials
@@ -338,7 +340,8 @@ Once logged in, you'll have access to the admin portal with the following featur
 
 ### Admin URLs
 
-- **Login**: `http://localhost:3000/auth/login`
+- **Login**: `http://localhost:3000/auth/login` (KO: `http://localhost:3000/ko/auth/login`)
+- **Register (KO)**: `http://localhost:3000/ko/auth/register`
 - **Dashboard**: `http://localhost:3000/admin`
 - **Patients**: `http://localhost:3000/admin/patients`
 - **Add Patient**: `http://localhost:3000/admin/patients/new`

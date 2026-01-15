@@ -151,7 +151,7 @@ npm run create-admin
 ### Log In
 
 1. Start server: `npm run dev`
-2. Go to: `http://localhost:3000/auth/login`
+2. Go to: `http://localhost:3000/auth/login` (KO: `http://localhost:3000/ko/auth/login`)
 3. Enter admin credentials
 4. You'll be redirected to `/admin` dashboard
 

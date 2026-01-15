@@ -15,6 +15,17 @@
     "errorPrefix": "오류:",
     "errorTitle": "오류"
   },
+  "status": {
+    "scheduled": "예약됨",
+    "completed": "완료됨",
+    "cancelled": "취소됨",
+    "rescheduled": "변경됨"
+  },
+  "appointmentType": {
+    "initialConsultation": "초진 상담",
+    "eegMonitoring": "EEG 모니터링",
+    "followUp": "추적 방문"
+  },
   "nav": {
     "brand": "EEG 예약",
     "brandShort": "EEG",

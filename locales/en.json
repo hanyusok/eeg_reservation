@@ -5,6 +5,12 @@
     "ctaLogin": "Go to Login",
     "ctaDashboard": "Go to Dashboard"
   },
+  "language": {
+    "title": "Choose your language",
+    "subtitle": "You can change this later in your browser settings.",
+    "english": "English",
+    "korean": "한국어"
+  },
   "common": {
     "back": "Back",
     "loading": "Loading...",

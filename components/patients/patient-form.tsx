@@ -28,7 +28,15 @@ const patientSchema = z.object({
 
 type PatientForm = z.infer<typeof patientSchema>
 
-export default function PatientForm({ patientId, initialData }: { patientId?: string; initialData?: any }) {
+export default function PatientForm({
+  patientId,
+  initialData,
+  redirectTo,
+}: {
+  patientId?: string
+  initialData?: any
+  redirectTo?: string
+}) {
   const router = useRouter()
   const [users, setUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
@@ -110,7 +118,7 @@ export default function PatientForm({ patientId, initialData }: { patientId?: st
           throw new Error(result.error || "Failed to update patient")
         }
 
-        router.push("/patients")
+        router.push(redirectTo || "/patients")
         router.refresh()
       } else {
         // Create new patient - first create user account, then patient profile
@@ -217,7 +225,7 @@ export default function PatientForm({ patientId, initialData }: { patientId?: st
       throw new Error(result.error || "Failed to create patient profile")
     }
 
-    router.push("/patients")
+    router.push(redirectTo || "/patients")
     router.refresh()
   }
 

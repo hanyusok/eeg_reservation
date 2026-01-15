@@ -156,6 +156,30 @@ export default function AdminDashboard() {
         </Button>
       </div>
 
+      {/* Appointment Quick Actions */}
+      <div className="rounded-lg border bg-card p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Appointment Actions</h2>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/admin/appointments">Manage All</Link>
+          </Button>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Button asChild variant="outline" className="justify-start">
+            <Link href="/admin/appointments?status=scheduled">Scheduled</Link>
+          </Button>
+          <Button asChild variant="outline" className="justify-start">
+            <Link href="/admin/appointments?status=completed">Completed</Link>
+          </Button>
+          <Button asChild variant="outline" className="justify-start">
+            <Link href="/admin/appointments?status=cancelled">Cancelled</Link>
+          </Button>
+          <Button asChild variant="outline" className="justify-start">
+            <Link href="/admin/appointments?status=rescheduled">Rescheduled</Link>
+          </Button>
+        </div>
+      </div>
+
       {/* Today's Appointments */}
       <div className="rounded-lg border bg-card p-6">
         <div className="flex items-center justify-between mb-4">

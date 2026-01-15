@@ -44,6 +44,7 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const [actionLoading, setActionLoading] = useState<null | "complete" | "cancel">(null)
   const [editData, setEditData] = useState({
     status: "",
     notes: "",
@@ -102,6 +103,62 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
     }
   }
 
+  const handleMarkCompleted = async () => {
+    if (!appointment || appointment.status === "completed" || appointment.status === "cancelled") {
+      return
+    }
+
+    try {
+      setActionLoading("complete")
+      const response = await fetch(`/api/appointments/${appointmentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: "completed" }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to mark appointment as completed")
+      }
+
+      setIsEditing(false)
+      fetchAppointment()
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const handleCancelAppointment = async () => {
+    if (!appointment || appointment.status === "cancelled") {
+      return
+    }
+
+    if (!window.confirm("Cancel this appointment? This cannot be undone.")) {
+      return
+    }
+
+    try {
+      setActionLoading("cancel")
+      const response = await fetch(`/api/appointments/${appointmentId}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to cancel appointment")
+      }
+
+      setIsEditing(false)
+      fetchAppointment()
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString("en-US", {
       weekday: "long",
@@ -147,6 +204,29 @@ export default function AppointmentDetail({ appointmentId }: { appointmentId: st
         <div className="flex gap-2">
           <Button asChild variant="outline">
             <Link href="/admin/appointments">Back to List</Link>
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleMarkCompleted}
+            disabled={
+              isEditing ||
+              actionLoading === "complete" ||
+              appointment.status === "completed" ||
+              appointment.status === "cancelled"
+            }
+          >
+            {actionLoading === "complete" ? "Marking..." : "Mark Completed"}
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleCancelAppointment}
+            disabled={
+              isEditing ||
+              actionLoading === "cancel" ||
+              appointment.status === "cancelled"
+            }
+          >
+            {actionLoading === "cancel" ? "Cancelling..." : "Cancel Appointment"}
           </Button>
           <Button onClick={() => setIsEditing(!isEditing)} variant="outline">
             {isEditing ? "Cancel" : "Edit"}

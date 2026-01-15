@@ -41,6 +41,13 @@ npm run dev
 - ✅ Patient list page loads
 - ✅ Search bar is functional
 - ✅ Table displays patient information (if any patients exist)
+- ✅ "Add New Patient" button is visible
+
+**Create a patient (admin):**
+1. Click **"Add New Patient"** (or go to `/admin/patients/new`)
+2. Fill in required patient and medical information
+3. Click **"Create Patient"**
+4. **Expected**: Redirected to `/admin/patients` and patient appears in list
 
 ### 5. Test Appointment Management
 
@@ -50,6 +57,13 @@ npm run dev
 - ✅ Appointment list loads
 - ✅ Search and filter options work
 - ✅ Can view appointment details
+- ✅ "Create Appointment" button is visible
+
+**Create an appointment (admin):**
+1. Click **"Create Appointment"** (or go to `/admin/appointments/new`)
+2. Select a patient, appointment type, date/time, and duration
+3. Click **"Book Appointment"**
+4. **Expected**: Redirected to `/admin/appointments` and appointment appears in list
 
 ### 6. Test Appointment Detail Page
 
@@ -60,6 +74,8 @@ npm run dev
 - ✅ Appointment information displays
 - ✅ Patient information displays
 - ✅ "Edit" button works
+- ✅ "Mark Completed" button works
+- ✅ "Cancel Appointment" button works
 - ✅ Can add appointment notes
 - ✅ Can upload documents
 
@@ -88,8 +104,8 @@ Then check the User model and verify the role field.
 ### Issue: Statistics show 0
 
 **Solution**: This is normal if you don't have any patients or appointments. Create some test data first:
-1. Create a patient at `/patients/new`
-2. Create an appointment at `/appointments/book`
+1. Create a patient at `/admin/patients/new`
+2. Create an appointment at `/admin/appointments/new`
 
 ### Issue: Document upload fails
 
@@ -103,9 +119,13 @@ Then check the User model and verify the role field.
 - [ ] Admin dashboard loads
 - [ ] Statistics API works (`/api/admin/stats`)
 - [ ] Patient list page works
+- [ ] Can create patient (admin)
 - [ ] Appointment list page works
+- [ ] Can create appointment (admin)
 - [ ] Appointment detail page works
 - [ ] Can edit appointments
+- [ ] Can mark appointments completed
+- [ ] Can cancel appointments
 - [ ] Can add appointment notes
 - [ ] Can upload documents
 - [ ] Can download documents

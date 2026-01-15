@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -28,7 +29,13 @@ interface Patient {
   dateOfBirth: string
 }
 
-export default function BookingForm() {
+export default function BookingForm({
+  redirectTo,
+  createPatientHref,
+}: {
+  redirectTo?: string
+  createPatientHref?: string
+}) {
   const router = useRouter()
   const [patients, setPatients] = useState<Patient[]>([])
   const [loading, setLoading] = useState(false)
@@ -101,7 +108,7 @@ export default function BookingForm() {
         throw new Error(result.error || "Failed to create appointment")
       }
 
-      router.push("/appointments")
+      router.push(redirectTo || "/appointments")
       router.refresh()
     } catch (err: any) {
       setError(err.message)
@@ -114,13 +121,14 @@ export default function BookingForm() {
   }
 
   if (patients.length === 0) {
+    const newPatientHref = createPatientHref || "/patients/new"
     return (
       <div className="rounded-lg border bg-card p-8 text-center">
         <p className="text-muted-foreground mb-4">
           No patients found. Please create a patient profile first.
         </p>
         <Button asChild>
-          <a href="/patients/new">Create Patient Profile</a>
+          <Link href={newPatientHref}>Create Patient Profile</Link>
         </Button>
       </div>
     )

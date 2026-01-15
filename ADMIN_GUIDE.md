@@ -100,7 +100,8 @@ Once logged in, you'll have access to the admin portal with the following featur
   - Upcoming Appointments
   - Today's Appointments
 - **Today's Appointments List**: View all appointments scheduled for today
-- **Quick Actions**: Quick links to common tasks
+- **Quick Actions**: Create appointment, add patient, and open settings
+- **Appointment Actions**: Status shortcuts (Scheduled, Completed, Cancelled, Rescheduled)
 
 ### Patient Management
 **URL**: `http://localhost:3000/admin/patients`
@@ -115,6 +116,7 @@ Once logged in, you'll have access to the admin portal with the following featur
 - Search and filter patients
 - View patient information
 - Navigate to patient's appointments
+- Add new patient profiles
 
 ### Appointment Management
 **URL**: `http://localhost:3000/admin/appointments`
@@ -131,6 +133,7 @@ Once logged in, you'll have access to the admin portal with the following featur
 - Cancel appointments
 - Add appointment notes
 - Upload medical documents
+- Create new appointments
 
 ### Appointment Detail Page
 **URL**: `http://localhost:3000/admin/appointments/[id]`
@@ -173,13 +176,27 @@ Once logged in, you'll have access to the admin portal with the following featur
 2. Use the search bar to find specific patients
 3. Click on a patient to view their details
 
-### 2. View Today's Appointments
+### 2. Create a New Patient (Admin)
+
+1. Go to **Admin Dashboard** → **Add Patient** (or go to `/admin/patients/new`)
+2. Fill in the patient and medical information
+3. Click **"Create Patient"**
+4. You will be redirected to `/admin/patients`
+
+### 3. View Today's Appointments
 
 1. Go to **Admin Dashboard** (`/admin`)
 2. Scroll to **"Today's Appointments"** section
 3. View all appointments scheduled for today
 
-### 3. Manage an Appointment
+### 4. Create a New Appointment (Admin)
+
+1. Go to **Admin Dashboard** → **Create Appointment** (or go to `/admin/appointments/new`)
+2. Select a patient, appointment type, date/time, and duration
+3. Click **"Book Appointment"**
+4. You will be redirected to `/admin/appointments`
+
+### 5. Manage an Appointment
 
 1. Go to **Appointments** (`/admin/appointments`)
 2. Click on any appointment to view details
@@ -189,7 +206,7 @@ Once logged in, you'll have access to the admin portal with the following featur
    - **Upload Document**: Click "Upload Document" to add medical documents
    - **Change Status**: Update appointment status (scheduled → completed → cancelled)
 
-### 4. Add Appointment Notes
+### 6. Add Appointment Notes
 
 1. Navigate to an appointment detail page
 2. Scroll to **"Appointment Notes"** section
@@ -197,7 +214,7 @@ Once logged in, you'll have access to the admin portal with the following featur
 4. Click **"Add Note"**
 5. The note will be saved with timestamp and your name
 
-### 5. Upload Medical Documents
+### 7. Upload Medical Documents
 
 1. Navigate to an appointment detail page
 2. Scroll to **"Medical Documents"** section
@@ -207,7 +224,7 @@ Once logged in, you'll have access to the admin portal with the following featur
 6. Click **"Upload"**
 7. The document will appear in the list
 
-### 6. Search and Filter
+### 8. Search and Filter
 
 **Patients:**
 - Search by name, email, or medical record number
@@ -324,7 +341,9 @@ Once logged in, you'll have access to the admin portal with the following featur
 - **Login**: `http://localhost:3000/auth/login`
 - **Dashboard**: `http://localhost:3000/admin`
 - **Patients**: `http://localhost:3000/admin/patients`
+- **Add Patient**: `http://localhost:3000/admin/patients/new`
 - **Appointments**: `http://localhost:3000/admin/appointments`
+- **Create Appointment**: `http://localhost:3000/admin/appointments/new`
 - **Settings**: `http://localhost:3000/admin/settings`
 
 ### Default Admin Credentials

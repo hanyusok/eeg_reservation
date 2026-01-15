@@ -191,12 +191,7 @@ export default function AdminAppointmentsList() {
                 <div className="flex gap-2">
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/admin/appointments/${appointment.id}`}>
-                      View Details
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/admin/appointments/${appointment.id}/edit`}>
-                      Edit
+                      Manage
                     </Link>
                   </Button>
                 </div>

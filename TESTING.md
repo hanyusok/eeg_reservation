@@ -109,12 +109,14 @@ Default credentials:
 - ✅ Search functionality
 - ✅ View patient details
 - ✅ Edit patient option
+- ✅ "Add New Patient" button
 
 **Test Checklist**:
 - [ ] Patient list loads
 - [ ] Search bar filters patients correctly
 - [ ] Click "View" opens patient details
 - [ ] Table shows all patient information
+- [ ] Can create a new patient (admin)
 
 ### 2.4 Test Appointment Management
 
@@ -126,12 +128,14 @@ Default credentials:
 - ✅ Status filter dropdown
 - ✅ View appointment details
 - ✅ Edit appointment option
+- ✅ "Create Appointment" button
 
 **Test Checklist**:
 - [ ] Appointment list loads
 - [ ] Search filters appointments
 - [ ] Status filter works
 - [ ] Click "View Details" opens appointment detail page
+- [ ] Can create a new appointment (admin)
 
 ### 2.5 Test Appointment Detail Page
 
@@ -141,12 +145,16 @@ Default credentials:
 - ✅ Appointment information display
 - ✅ Patient information display
 - ✅ Edit appointment functionality
+- ✅ Mark appointment completed
+- ✅ Cancel appointment
 - ✅ Appointment notes section
 - ✅ Document management section
 
 **Test Checklist**:
 - [ ] Appointment details display correctly
 - [ ] Click "Edit" allows editing
+- [ ] Can mark appointment completed
+- [ ] Can cancel appointment
 - [ ] Can add appointment notes
 - [ ] Can upload documents
 - [ ] Can view/download documents
@@ -293,8 +301,8 @@ curl -X POST http://localhost:3000/api/documents \
 
 To test with data, you can:
 
-1. **Create a patient**: Use `/patients/new` (as parent/admin)
-2. **Create an appointment**: Use `/appointments/book`
+1. **Create a patient (admin)**: Use `/admin/patients/new`
+2. **Create an appointment (admin)**: Use `/admin/appointments/new`
 3. **Or use Prisma Studio**: `npm run db:studio` to manually add test data
 
 ## Next Steps

@@ -10,8 +10,9 @@ const createNoteSchema = z.object({
 // GET /api/appointments/:id/notes - Get appointment notes
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params
   try {
     const session = await auth()
     if (!session?.user) {
@@ -35,16 +36,16 @@ export async function GET(
     // In production, you'd query a separate notes table
     const notes = appointment.notes
       ? [
-          {
-            id: params.id + "-note",
-            content: appointment.notes,
-            createdAt: new Date().toISOString(),
-            user: {
-              firstName: session.user.name?.split(" ")[0] || "Admin",
-              lastName: session.user.name?.split(" ").slice(1).join(" ") || "",
-            },
+        {
+          id: params.id + "-note",
+          content: appointment.notes,
+          createdAt: new Date().toISOString(),
+          user: {
+            firstName: session.user.name?.split(" ")[0] || "Admin",
+            lastName: session.user.name?.split(" ").slice(1).join(" ") || "",
           },
-        ]
+        },
+      ]
       : []
 
     return NextResponse.json({ notes })
@@ -60,8 +61,9 @@ export async function GET(
 // POST /api/appointments/:id/notes - Add appointment note
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params
   try {
     const session = await auth()
     if (!session?.user) {

@@ -117,7 +117,66 @@ export default function AdminPatientsList() {
       </div>
 
       {/* Patients Table */}
-      <div className="rounded-lg border bg-card">
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {filteredPatients.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground border rounded-lg bg-card">
+            {searchTerm
+              ? messages.adminPatientsList.emptySearch
+              : messages.adminPatientsList.empty}
+          </div>
+        ) : (
+          filteredPatients.map((patient) => (
+            <div key={patient.id} className="p-4 rounded-lg border bg-card shadow-sm space-y-3">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="font-semibold text-lg">
+                    {patient.user.firstName} {patient.user.lastName}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {patient.user.email}
+                  </div>
+                </div>
+                <div className="text-sm bg-secondary px-2 py-1 rounded">
+                  {calculateAge(patient.dateOfBirth)} {messages.adminPatientsList.years}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <span className="text-muted-foreground block">{messages.adminPatientsList.columns.mrn}</span>
+                  {patient.medicalRecordNumber || "-"}
+                </div>
+                <div>
+                  <span className="text-muted-foreground block">{messages.adminPatientsList.columns.parent}</span>
+                  {patient.parent ? `${patient.parent.firstName} ${patient.parent.lastName}` : "-"}
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center pt-2 border-t mt-2">
+                <div className="text-sm">
+                  {messages.adminPatientsList.columns.appointments}: <span className="font-medium">{patient._count.appointments}</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button asChild variant="ghost" size="sm" className="h-8">
+                    <Link href={withLocalePath(locale, `/admin/patients/${patient.id}`)}>
+                      {messages.adminPatientsList.actions.view}
+                    </Link>
+                  </Button>
+                  <Button asChild variant="ghost" size="sm" className="h-8">
+                    <Link href={withLocalePath(locale, `/admin/patients/${patient.id}/edit`)}>
+                      {messages.common.edit}
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block rounded-lg border bg-card">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

@@ -2,11 +2,10 @@ import { BackButton } from "@/components/ui/back-button"
 import CenterInformation from "@/components/information/center-information"
 import { getMessages, type Locale, withLocalePath } from "@/lib/i18n"
 
-export default function LocalizedInformationPage({
-  params,
-}: {
-  params: { locale: string }
+export default async function LocalizedInformationPage(props: {
+  params: Promise<{ locale: string }>
 }) {
+  const params = await props.params
   const locale = params.locale as Locale
   const messages = getMessages(locale)
   const dashboardHref = withLocalePath(locale, "/dashboard")

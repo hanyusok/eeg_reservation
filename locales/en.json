@@ -169,7 +169,9 @@
     "patientsSubtitle": "View and manage all patients",
     "patientsCta": "Add Patient",
     "settingsTitle": "Settings",
-    "settingsSubtitle": "Configure system settings"
+    "settingsSubtitle": "Configure system settings",
+    "availabilityTitle": "Availability",
+    "availabilitySubtitle": "Manage weekly working hours and blocked dates."
   },
   "information": {
     "title": "EEG Center Information",
@@ -195,9 +197,18 @@
     "hours": {
       "title": "Operating Hours",
       "schedule": [
-        { "label": "Monday - Friday", "time": "09:00 - 18:00" },
-        { "label": "Saturday", "time": "09:00 - 13:00" },
-        { "label": "Sunday & Holidays", "time": "Closed" }
+        {
+          "label": "Monday - Friday",
+          "time": "09:00 - 18:00"
+        },
+        {
+          "label": "Saturday",
+          "time": "09:00 - 13:00"
+        },
+        {
+          "label": "Sunday & Holidays",
+          "time": "Closed"
+        }
       ],
       "emergencyTitle": "Emergency Appointments:",
       "emergencyText": "Contact us 24/7 for urgent cases",

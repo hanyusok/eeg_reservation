@@ -16,8 +16,9 @@ const updatePatientSchema = z.object({
 // GET /api/patients/:id - Get patient details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params
   try {
     const session = await auth()
     if (!session?.user) {
@@ -89,8 +90,9 @@ export async function GET(
 // PUT /api/patients/:id - Update patient
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params
   try {
     const session = await auth()
     if (!session?.user) {

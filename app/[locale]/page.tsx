@@ -2,11 +2,10 @@ import Link from "next/link"
 import { getMessages, supportedLocales, type Locale, withLocalePath } from "@/lib/i18n"
 import { Button } from "@/components/ui/button"
 
-export default function LocalizedHomePage({
-  params,
-}: {
-  params: { locale: string }
+export default async function LocalizedHomePage(props: {
+  params: Promise<{ locale: string }>
 }) {
+  const params = await props.params
   const locale = params.locale as Locale
   const messages = getMessages(locale)
 

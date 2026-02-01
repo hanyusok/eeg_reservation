@@ -8,10 +8,8 @@ import { useMessages } from "@/lib/i18n-client"
 
 export default function SettingsPanel() {
   const [settings, setSettings] = useState({
-    zapierWebhookUrl: "",
     emailProvider: "console",
     smsProvider: "console",
-    calendlyApiKey: "",
   })
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -35,32 +33,6 @@ export default function SettingsPanel() {
 
   return (
     <div className="space-y-6">
-      {/* Zapier Integration */}
-      <div className="rounded-lg border bg-card p-6">
-        <h2 className="text-xl font-semibold mb-4">
-          {messages.settingsPanel.zapier.title}
-        </h2>
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="zapierWebhookUrl">
-              {messages.settingsPanel.zapier.webhookLabel}
-            </Label>
-            <Input
-              id="zapierWebhookUrl"
-              type="url"
-              placeholder={messages.settingsPanel.zapier.webhookPlaceholder}
-              value={settings.zapierWebhookUrl}
-              onChange={(e) =>
-                setSettings({ ...settings, zapierWebhookUrl: e.target.value })
-              }
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              {messages.settingsPanel.zapier.webhookHint}
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* Email Configuration */}
       <div className="rounded-lg border bg-card p-6">
         <h2 className="text-xl font-semibold mb-4">
@@ -119,39 +91,14 @@ export default function SettingsPanel() {
         </div>
       </div>
 
-      {/* Calendly Configuration */}
-      <div className="rounded-lg border bg-card p-6">
-        <h2 className="text-xl font-semibold mb-4">
-          {messages.settingsPanel.calendly.title}
-        </h2>
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="calendlyApiKey">
-              {messages.settingsPanel.calendly.apiKeyLabel}
-            </Label>
-            <Input
-              id="calendlyApiKey"
-              type="password"
-              placeholder={messages.settingsPanel.calendly.apiKeyPlaceholder}
-              value={settings.calendlyApiKey}
-              onChange={(e) =>
-                setSettings({ ...settings, calendlyApiKey: e.target.value })
-              }
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              {messages.settingsPanel.calendly.apiKeyHint}
-            </p>
-          </div>
-        </div>
-      </div>
+
 
       {message && (
         <div
-          className={`rounded-md p-3 ${
-            message.includes(messages.settingsPanel.messages.failedPrefix)
-              ? "bg-destructive/10 text-destructive"
-              : "bg-green-100 text-green-800"
-          }`}
+          className={`rounded-md p-3 ${message.includes(messages.settingsPanel.messages.failedPrefix)
+            ? "bg-destructive/10 text-destructive"
+            : "bg-green-100 text-green-800"
+            }`}
         >
           {message}
         </div>

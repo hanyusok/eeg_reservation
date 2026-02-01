@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button"
 import AdminPatientsList from "@/components/admin/admin-patients-list"
 import { getMessages, type Locale, withLocalePath } from "@/lib/i18n"
 
-export default async function LocalizedAdminPatientsPage({
-  params,
-}: {
-  params: { locale: string }
+export default async function LocalizedAdminPatientsPage(props: {
+  params: Promise<{ locale: string }>
 }) {
+  const params = await props.params
   const session = await auth()
   const locale = params.locale as Locale
   const messages = getMessages(locale)

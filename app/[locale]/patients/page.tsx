@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button"
 import PatientsList from "@/components/patients/patients-list"
 import { getMessages, type Locale, withLocalePath } from "@/lib/i18n"
 
-export default async function LocalizedPatientsPage({
-  params,
-}: {
-  params: { locale: string }
+export default async function LocalizedPatientsPage(props: {
+  params: Promise<{ locale: string }>
 }) {
+  const params = await props.params
   const session = await auth()
   const locale = params.locale as Locale
   const messages = getMessages(locale)
@@ -31,10 +30,10 @@ export default async function LocalizedPatientsPage({
           session.user.role === "admin" ||
           session.user.role === "doctor" ||
           session.user.role === "patient") && (
-          <Button asChild>
-            <Link href={newPatientHref}>{messages.patients.cta}</Link>
-          </Button>
-        )}
+            <Button asChild>
+              <Link href={newPatientHref}>{messages.patients.cta}</Link>
+            </Button>
+          )}
       </div>
 
       <PatientsList />

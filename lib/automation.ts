@@ -6,12 +6,7 @@
 import { prisma } from "@/lib/prisma"
 import { sendAppointmentReminder } from "@/lib/email"
 import { sendAppointmentReminderSMS } from "@/lib/sms"
-import {
-  triggerNewAppointmentWorkflow,
-  triggerAppointmentReminderWorkflow,
-  triggerAppointmentCancellationWorkflow,
-  triggerFollowUpWorkflow,
-} from "@/lib/zapier"
+
 
 /**
  * Process appointment reminders
@@ -125,16 +120,7 @@ export async function processAppointmentReminders(): Promise<void> {
           }
         }
 
-        // Trigger Zapier workflow
-        await triggerAppointmentReminderWorkflow({
-          id: appointment.id,
-          patientName,
-          parentEmail: appointment.parent.email,
-          parentPhone: appointment.parent.phone || undefined,
-          appointmentType: appointment.appointmentType,
-          scheduledAt: appointment.scheduledAt,
-          durationMinutes: appointment.durationMinutes,
-        })
+
       } catch (error) {
         console.error(`Error sending reminder for appointment ${appointment.id}:`, error)
 
@@ -202,14 +188,7 @@ export async function processFollowUpEmails(): Promise<void> {
         patientName,
       })
 
-      // Trigger Zapier workflow
-      await triggerFollowUpWorkflow({
-        id: appointment.id,
-        patientName,
-        parentEmail: appointment.parent.email,
-        appointmentType: appointment.appointmentType,
-        completedAt: appointment.scheduledAt,
-      })
+
     } catch (error) {
       console.error(`Error sending follow-up for appointment ${appointment.id}:`, error)
     }

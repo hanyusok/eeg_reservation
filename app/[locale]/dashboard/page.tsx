@@ -9,10 +9,10 @@ import { getMessages, type Locale, withLocalePath } from "@/lib/i18n"
 export default async function LocalizedDashboardPage({
   params,
 }: {
-  params: { locale: string }
+  params: Promise<{ locale: string }>
 }) {
+  const { locale } = await params
   const session = await auth()
-  const locale = params.locale as Locale
   const messages = getMessages(locale)
 
   if (!session) {
@@ -95,27 +95,27 @@ export default async function LocalizedDashboardPage({
           session.user.role === "admin" ||
           session.user.role === "doctor" ||
           session.user.role === "patient") && (
-          <div className="rounded-lg border bg-card p-6">
-            <h2 className="text-xl font-semibold mb-2">
-              {messages.dashboard.patients.title}
-            </h2>
-            <p className="text-muted-foreground mb-4">
-              {messages.dashboard.patients.description}
-            </p>
-            <div className="flex gap-2">
-              <Button asChild>
-                <Link href={patientsHref}>
-                  {messages.dashboard.patients.view}
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href={addPatientHref}>
-                  {messages.dashboard.patients.add}
-                </Link>
-              </Button>
+            <div className="rounded-lg border bg-card p-6">
+              <h2 className="text-xl font-semibold mb-2">
+                {messages.dashboard.patients.title}
+              </h2>
+              <p className="text-muted-foreground mb-4">
+                {messages.dashboard.patients.description}
+              </p>
+              <div className="flex gap-2">
+                <Button asChild>
+                  <Link href={patientsHref}>
+                    {messages.dashboard.patients.view}
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href={addPatientHref}>
+                    {messages.dashboard.patients.add}
+                  </Link>
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         <div className="rounded-lg border bg-card p-6">
           <h2 className="text-xl font-semibold mb-2">

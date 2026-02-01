@@ -134,7 +134,7 @@ export default function AdminAppointmentsList() {
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <Input
           type="text"
           placeholder={messages.adminAppointmentsList.searchPlaceholder}
@@ -167,7 +167,7 @@ export default function AdminAppointmentsList() {
               key={appointment.id}
               className="rounded-lg border bg-card p-6 hover:shadow-md transition-shadow"
             >
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-semibold">

@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useMessages } from "@/lib/i18n-client"
+import { Calendar } from "@/components/ui/calendar"
+import { format, addDays } from "date-fns"
+import { cn } from "@/lib/utils"
 
 const createBookingSchema = (messages: any) =>
   z.object({
@@ -50,12 +53,17 @@ export default function BookingForm({
   const [error, setError] = useState<string | null>(null)
   const [loadingPatients, setLoadingPatients] = useState(true)
 
+  // Scheduling State
+  const [selectedDate, setSelectedDate] = useState<Date>()
+  const [availableSlots, setAvailableSlots] = useState<string[]>([])
+  const [loadingSlots, setLoadingSlots] = useState(false)
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
   } = useForm<BookingForm>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
@@ -64,12 +72,9 @@ export default function BookingForm({
     },
   })
 
-  const selectedPatientId = watch("patientId")
-  const appointmentType = watch("appointmentType")
-
   useEffect(() => {
     fetchPatients()
-    
+
     // Check if patientId is in URL params
     const urlParams = new URLSearchParams(window.location.search)
     const patientIdParam = urlParams.get("patientId")
@@ -77,6 +82,15 @@ export default function BookingForm({
       setValue("patientId", patientIdParam)
     }
   }, [setValue])
+
+  // Fetch slots when date changes
+  useEffect(() => {
+    if (selectedDate) {
+      fetchSlots(selectedDate)
+      setSelectedSlot(null) // Reset selection
+      setValue("scheduledAt", "") // Reset form value
+    }
+  }, [selectedDate])
 
   const fetchPatients = async () => {
     try {
@@ -92,6 +106,39 @@ export default function BookingForm({
     } finally {
       setLoadingPatients(false)
     }
+  }
+
+  const fetchSlots = async (date: Date) => {
+    setLoadingSlots(true)
+    setAvailableSlots([])
+    try {
+      // Get start/end of day
+      const startTime = new Date(date)
+      startTime.setHours(0, 0, 0, 0)
+
+      const endTime = new Date(date)
+      endTime.setHours(23, 59, 59, 999)
+
+      const query = new URLSearchParams({
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+      })
+
+      const res = await fetch(`/api/appointments/available-slots?${query}`)
+      if (res.ok) {
+        const data = await res.json()
+        setAvailableSlots(data.slots || [])
+      }
+    } catch (err) {
+      console.error("Error fetching slots", err)
+    } finally {
+      setLoadingSlots(false)
+    }
+  }
+
+  const handleSlotSelect = (slot: string) => {
+    setSelectedSlot(slot)
+    setValue("scheduledAt", slot)
   }
 
   const onSubmit = async (data: BookingForm) => {
@@ -152,99 +199,134 @@ export default function BookingForm({
         </div>
       )}
 
-      <div>
-        <Label htmlFor="patientId">{messages.bookingForm.patientLabel}</Label>
-        <select
-          {...register("patientId")}
-          id="patientId"
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <option value="">{messages.bookingForm.patientPlaceholder}</option>
-          {patients.map((patient) => (
-            <option key={patient.id} value={patient.id}>
-              {patient.user.firstName} {patient.user.lastName} (DOB:{" "}
-              {new Date(patient.dateOfBirth).toLocaleDateString()})
+      {/* Patient & Type Selection */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <Label htmlFor="patientId">{messages.bookingForm.patientLabel}</Label>
+          <select
+            {...register("patientId")}
+            id="patientId"
+            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <option value="">{messages.bookingForm.patientPlaceholder}</option>
+            {patients.map((patient) => (
+              <option key={patient.id} value={patient.id}>
+                {patient.user.firstName} {patient.user.lastName} (DOB:{" "}
+                {new Date(patient.dateOfBirth).toLocaleDateString()})
+              </option>
+            ))}
+          </select>
+          {errors.patientId && (
+            <p className="mt-1 text-sm text-destructive">
+              {errors.patientId.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <Label htmlFor="appointmentType">{messages.bookingForm.typeLabel}</Label>
+          <select
+            {...register("appointmentType")}
+            id="appointmentType"
+            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <option value="initial_consultation">
+              {messages.bookingForm.types.initialConsultation}
             </option>
-          ))}
-        </select>
-        {errors.patientId && (
-          <p className="mt-1 text-sm text-destructive">
-            {errors.patientId.message}
-          </p>
-        )}
+            <option value="eeg_monitoring">{messages.bookingForm.types.eegMonitoring}</option>
+            <option value="follow_up">{messages.bookingForm.types.followUp}</option>
+          </select>
+        </div>
       </div>
 
-      <div>
-        <Label htmlFor="appointmentType">{messages.bookingForm.typeLabel}</Label>
-        <select
-          {...register("appointmentType")}
-          id="appointmentType"
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <option value="initial_consultation">
-            {messages.bookingForm.types.initialConsultation}
-          </option>
-          <option value="eeg_monitoring">{messages.bookingForm.types.eegMonitoring}</option>
-          <option value="follow_up">{messages.bookingForm.types.followUp}</option>
-        </select>
-        {errors.appointmentType && (
-          <p className="mt-1 text-sm text-destructive">
-            {errors.appointmentType.message}
-          </p>
-        )}
+      {/* Date & Time Selection */}
+      <div className="rounded-lg border bg-card p-6">
+        <h3 className="font-semibold mb-4 text-lg">Select Date & Time</h3>
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Calendar */}
+          <div className="flex-none">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              disabled={(date) => date < addDays(new Date(), -1)} // Disable past dates
+              className="rounded-md border shadow-sm"
+              initialFocus
+            />
+          </div>
+
+          {/* Time Slots */}
+          <div className="flex-1">
+            {!selectedDate ? (
+              <div className="h-full flex items-center justify-center text-muted-foreground bg-muted/20 rounded-md border border-dashed p-8">
+                Select a date to view available times
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <h4 className="font-medium">
+                  Available Slots for {format(selectedDate, "PPP")}
+                </h4>
+
+                {loadingSlots ? (
+                  <div className="text-center py-8">Loading available times...</div>
+                ) : availableSlots.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No availability on this date.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 max-h-[300px] overflow-y-auto pr-2">
+                    {availableSlots.map((slot) => (
+                      <button
+                        key={slot}
+                        type="button"
+                        onClick={() => handleSlotSelect(slot)}
+                        className={cn(
+                          "w-full px-4 py-2 text-sm rounded-md border transition-colors",
+                          selectedSlot === slot
+                            ? "bg-primary text-primary-foreground border-primary font-medium"
+                            : "bg-background hover:bg-muted border-input"
+                        )}
+                      >
+                        {format(new Date(slot), "h:mm a")}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {errors.scheduledAt && (
+                  <p className="text-sm text-destructive mt-2">
+                    {errors.scheduledAt.message}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div>
-        <Label htmlFor="scheduledAt">{messages.bookingForm.dateTimeLabel}</Label>
-        <Input
-          {...register("scheduledAt")}
-          type="datetime-local"
-          id="scheduledAt"
-          min={new Date().toISOString().slice(0, 16)}
-        />
-        {errors.scheduledAt && (
-          <p className="mt-1 text-sm text-destructive">
-            {errors.scheduledAt.message}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="durationMinutes">{messages.bookingForm.durationLabel}</Label>
-        <Input
-          {...register("durationMinutes", { valueAsNumber: true })}
-          type="number"
-          id="durationMinutes"
-          min="15"
-          step="15"
-          defaultValue={60}
-        />
-        {errors.durationMinutes && (
-          <p className="mt-1 text-sm text-destructive">
-            {errors.durationMinutes.message}
-          </p>
-        )}
-      </div>
+      {/* Hidden input to hold the value for form validation */}
+      <input type="hidden" {...register("scheduledAt")} />
 
       <div>
         <Label htmlFor="notes">{messages.bookingForm.notesLabel}</Label>
         <textarea
           {...register("notes")}
           id="notes"
-          rows={4}
+          rows={3}
           className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           placeholder={messages.bookingForm.notesPlaceholder}
         />
       </div>
 
-      <div className="flex gap-4">
-        <Button type="submit" disabled={loading}>
+      <div className="flex gap-4 pt-4">
+        <Button type="submit" disabled={loading} size="lg" className="w-full md:w-auto">
           {loading ? messages.bookingForm.booking : messages.bookingForm.submit}
         </Button>
         <Button
           type="button"
           variant="outline"
+          size="lg"
           onClick={() => router.back()}
+          className="w-full md:w-auto"
         >
           {messages.common.cancel}
         </Button>
@@ -252,4 +334,3 @@ export default function BookingForm({
     </form>
   )
 }
-

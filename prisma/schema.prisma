@@ -58,8 +58,40 @@ model User {
   appointments      Appointment[]
   uploadedDocuments MedicalDocument[]
   auditLogs         AuditLog[]
+  availability      Availability[]
+  blockedDates      BlockedDate[]
 
   @@map("users")
+}
+
+model Availability {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  dayOfWeek Int      @map("day_of_week") // 0=Sunday, 1=Monday, etc.
+  startTime String   @map("start_time") // Format: "HH:mm"
+  endTime   String   @map("end_time")   // Format: "HH:mm"
+  isEnabled Boolean  @default(true) @map("is_enabled")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, dayOfWeek])
+  @@map("availabilities")
+}
+
+model BlockedDate {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  date      DateTime @db.Date
+  reason    String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("blocked_dates")
 }
 
 model Patient {

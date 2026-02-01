@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { sendAppointmentConfirmation } from "@/lib/email"
-import { triggerNewAppointmentWorkflow } from "@/lib/zapier"
+// Removed Zapier trigger
 import * as z from "zod"
 
 const createAppointmentSchema = z.object({
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
     // Send confirmation email and trigger Zapier workflow (async, don't wait for it)
     try {
       const patientName = `${appointment.patient.user.firstName} ${appointment.patient.user.lastName}`
-      
+
       // Send email
       await sendAppointmentConfirmation(
         appointment.parent.email,
@@ -188,21 +188,16 @@ export async function POST(request: NextRequest) {
         }
       )
 
-      // Trigger Zapier workflow
-      await triggerNewAppointmentWorkflow({
-        id: appointment.id,
-        patientName,
-        parentEmail: appointment.parent.email,
-        appointmentType: appointment.appointmentType,
-        scheduledAt: appointment.scheduledAt,
-        durationMinutes: appointment.durationMinutes,
-      })
+      // Trigger notifications (Email, SMS) can be added here
     } catch (error) {
       console.error("Failed to send confirmation email or trigger Zapier:", error)
       // Don't fail the request if email/Zapier fails
     }
 
-    return NextResponse.json({ appointment }, { status: 201 })
+    return NextResponse.json(
+      { appointment, message: "Appointment created" },
+      { status: 201 }
+    )
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

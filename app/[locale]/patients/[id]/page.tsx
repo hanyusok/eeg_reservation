@@ -4,11 +4,10 @@ import PatientDetail from "@/components/patients/patient-detail"
 import { BackButton } from "@/components/ui/back-button"
 import { getMessages, type Locale, withLocalePath } from "@/lib/i18n"
 
-export default async function LocalizedPatientDetailPage({
-  params,
-}: {
-  params: { id: string; locale: string }
+export default async function LocalizedPatientDetailPage(props: {
+  params: Promise<{ id: string; locale: string }>
 }) {
+  const params = await props.params
   const session = await auth()
   const locale = params.locale as Locale
   const messages = getMessages(locale)

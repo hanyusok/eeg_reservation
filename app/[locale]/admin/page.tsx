@@ -3,11 +3,10 @@ import { redirect } from "next/navigation"
 import AdminDashboard from "@/components/admin/admin-dashboard"
 import { getMessages, type Locale } from "@/lib/i18n"
 
-export default async function LocalizedAdminPage({
-  params,
-}: {
-  params: { locale: string }
+export default async function LocalizedAdminPage(props: {
+  params: Promise<{ locale: string }>
 }) {
+  const params = await props.params
   const session = await auth()
   const locale = params.locale as Locale
   const messages = getMessages(locale)

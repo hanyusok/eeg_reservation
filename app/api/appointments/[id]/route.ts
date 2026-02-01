@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { sendAppointmentCancellation, sendAppointmentRescheduled } from "@/lib/email"
-import { triggerAppointmentCancellationWorkflow } from "@/lib/zapier"
 import * as z from "zod"
 
 const updateAppointmentSchema = z.object({
@@ -16,8 +15,9 @@ const updateAppointmentSchema = z.object({
 // GET /api/appointments/:id - Get appointment details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params
   try {
     const session = await auth()
     if (!session?.user) {
@@ -85,8 +85,9 @@ export async function GET(
 // PUT /api/appointments/:id - Update appointment
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params
   try {
     const session = await auth()
     if (!session?.user) {
@@ -171,7 +172,7 @@ export async function PUT(
     // Send rescheduled email if appointment was rescheduled
     if (wasRescheduled && validatedData.scheduledAt) {
       try {
-        const patientName = `${updatedAppointment.patient.user.firstName} ${updatedAppointment.patient.user.lastName}`
+        const patientName = `${updatedAppointment.patient.user.firstName} ${updatedAppointment.patient.user.lastName} `
         await sendAppointmentRescheduled(
           updatedAppointment.parent.email,
           {
@@ -189,19 +190,7 @@ export async function PUT(
 
     // Trigger follow-up workflow if appointment was completed
     if (wasCompleted) {
-      try {
-        const { triggerFollowUpWorkflow } = await import("@/lib/zapier")
-        const patientName = `${updatedAppointment.patient.user.firstName} ${updatedAppointment.patient.user.lastName}`
-        await triggerFollowUpWorkflow({
-          id: updatedAppointment.id,
-          patientName,
-          parentEmail: updatedAppointment.parent.email,
-          appointmentType: updatedAppointment.appointmentType,
-          completedAt: updatedAppointment.scheduledAt,
-        })
-      } catch (error) {
-        console.error("Failed to trigger follow-up workflow:", error)
-      }
+      // Logic for follow-up can be added here
     }
 
     return NextResponse.json({ appointment: updatedAppointment })
@@ -224,8 +213,9 @@ export async function PUT(
 // DELETE /api/appointments/:id - Cancel appointment
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params
   try {
     const session = await auth()
     if (!session?.user) {
@@ -298,8 +288,8 @@ export async function DELETE(
 
     // Send cancellation email and trigger Zapier workflow (async)
     try {
-      const patientName = `${cancelledAppointment.patient.user.firstName} ${cancelledAppointment.patient.user.lastName}`
-      
+      const patientName = `${cancelledAppointment.patient.user.firstName} ${cancelledAppointment.patient.user.lastName} `
+
       await sendAppointmentCancellation(
         cancelledAppointment.parent.email,
         {
@@ -308,14 +298,6 @@ export async function DELETE(
           patientName,
         }
       )
-
-      await triggerAppointmentCancellationWorkflow({
-        id: cancelledAppointment.id,
-        patientName,
-        parentEmail: cancelledAppointment.parent.email,
-        appointmentType: cancelledAppointment.appointmentType,
-        scheduledAt: cancelledAppointment.scheduledAt,
-      })
     } catch (error) {
       console.error("Failed to send cancellation email or trigger Zapier:", error)
     }

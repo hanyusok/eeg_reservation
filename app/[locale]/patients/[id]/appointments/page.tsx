@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { getMessages, type Locale, withLocalePath } from "@/lib/i18n"
 
-export default async function LocalizedPatientAppointmentsPage({
-  params,
-}: {
-  params: { id: string; locale: string }
+export default async function LocalizedPatientAppointmentsPage(props: {
+  params: Promise<{ id: string; locale: string }>
 }) {
+  const params = await props.params
   const session = await auth()
   const locale = params.locale as Locale
   const messages = getMessages(locale)

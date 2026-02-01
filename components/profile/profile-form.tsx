@@ -39,8 +39,8 @@ const createPasswordSchema = (messages: any) =>
       path: ["confirmPassword"],
     })
 
-type ProfileFormData = z.infer<typeof profileSchema>
-type PasswordFormData = z.infer<typeof passwordSchema>
+type ProfileFormData = z.infer<ReturnType<typeof createProfileSchema>>
+type PasswordFormData = z.infer<ReturnType<typeof createPasswordSchema>>
 
 interface ProfileFormProps {
   initialData: {
@@ -123,16 +123,16 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       }
 
       setSuccess(messages.profileForm.success.profileUpdated)
-      
+
       // Refresh the page to show updated data
       // This will trigger a server-side re-render with fresh data from database
       router.refresh()
-      
+
       // Optionally redirect to dashboard to see updated profile
       setTimeout(() => {
         router.push(withLocalePath(locale, "/dashboard"))
       }, 1500)
-      
+
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000)
     } catch (err: any) {
@@ -169,7 +169,7 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       setSuccess(messages.profileForm.success.passwordChanged)
       setShowPasswordForm(false)
       resetPassword()
-      
+
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(null), 3000)
     } catch (err: any) {

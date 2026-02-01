@@ -1,17 +1,25 @@
 import { auth } from "@/auth"
+import { supportedLocales } from "@/lib/i18n"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 export default auth((req) => {
   const session = req.auth
-  const path = req.nextUrl.pathname
-  const locale = path.startsWith("/ko")
-    ? "ko"
-    : path.startsWith("/en")
-      ? "en"
-      : null
-  const localePrefix = locale ? `/${locale}` : ""
-  const normalizedPath = locale ? path.slice(localePrefix.length) || "/" : path
+  const { pathname } = req.nextUrl
+  const pathnameHasLocale = supportedLocales.some(
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  )
+
+  if (!pathnameHasLocale) {
+    // Redirect to default locale (ko) if no locale is present
+    const locale = "ko"
+    req.nextUrl.pathname = `/${locale}${pathname}`
+    return NextResponse.redirect(req.nextUrl)
+  }
+
+  const locale = pathname.startsWith("/ko") ? "ko" : "en"
+  const localePrefix = `/${locale}`
+  const normalizedPath = pathname.slice(localePrefix.length) || "/"
 
   // Admin routes
   if (
@@ -59,6 +67,8 @@ export const config = {
     "/(en|ko)/appointments/:path*",
     "/(en|ko)/patients/:path*",
     "/(en|ko)/profile/:path*",
+    "/auth/:path*",
+    "/(en|ko)/auth/:path*",
   ],
 }
 

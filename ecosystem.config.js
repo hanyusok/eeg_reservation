@@ -6,7 +6,6 @@ module.exports = {
             args: "start",
             env: {
                 NODE_ENV: "production",
-                // Add other environment variables here if needed
             },
         },
     ],
